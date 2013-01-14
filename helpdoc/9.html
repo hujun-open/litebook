@@ -1,0 +1,150 @@
+﻿<html>
+	
+<head>
+	<title>在线搜索及下载插件开发指南</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf8">
+    <meta name="generator" content="HelpNDoc">
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript"><!--
+		var sTopicId = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+		if (top.frames.length == 0)
+			top.location.href = "litebook.html?" + sTopicId
+		else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+			top.FrameTOC.SelectTocItem(sTopicId);
+	</script>
+</head>
+
+<body>
+
+	<div id="topic_header">
+			<div id="topic_header_content">
+				<h1>在线搜索及下载插件开发指南</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="4.html">功能介绍</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="4.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="8.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="10.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p class="rvps3"><span class="rvts8">本文介绍了开发litebook在线搜索及下载插件（以下简称插件）所需要了解的信息</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">编程语言</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;"><ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside;">
+<li class="rvps5" style="margin-left: 0"><span class="rvts8">python 2.6/2.7</span></li>
+<li class="rvps5" style="margin-left: 0"><span class="rvts8">脚本编码格式：utf-8</span></li>
+<li class="rvps5" style="margin-left: 0"><span class="rvts8">调用接口函数</span></li>
+</ul></ul>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
+<li class="rvps3"><span class="rvts8">plugin必需提供如下两个函数供litebook主程序调用：</span></li>
+<ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside;">
+<li class="rvps5" style="margin-left: 0"><span class="rvts8">GetSearchResults(key,useproxy=False,proxyserver='',proxyport=0,proxyuser='',proxypass='')</span></li>
+</ul></ul>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp;*传入参数说明：</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *key: 搜索关键字，类型unicode</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *useproxy: 是否使用带来代理，类型boolean</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *proxyserver:HTTP代理服务器地址（IP或域名），类型unicode</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *proxyport: HTTP代理服务器端口，类型unicode</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *proxyuser: HTTP代理服务器认证用户名，类型unicode</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *proxypass: HTTP代理服务器认证口令，类型unicode</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp;*此函数返回搜索结果列表，且结果为一个dict list，r[x]={'bookname':,'book_index_url':,'booksize':,'authorname':,'bookstatus':,'lastupdatetime'}</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *类型均为unicode</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *bookname：小说名称</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *book_index_url：小说的章节列表页的URL</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *booksize：小说大小，用途仅为显示，可以为空字符串</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *authorname：小说作者，用途仅为显示，可以为空字符串</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *bookstatus：小说状态（如连载中或完本），用途仅为显示，可以为空字符串</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *lastupdatetime：最后更新时间，用途仅为显示，可以为空字符串</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *如果搜索失败的话，则返回[]</span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;"><ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside;">
+<li class="rvps5" style="margin-left: 0"><span class="rvts8"> &nbsp;GetBook(url,bkname='',win=None,evt=None,useproxy=False,proxyserver='',proxyport=0,proxyuser='',proxypass='',concurrent=10,mode='new',last_chapter_count=0)</span></li>
+</ul></ul>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp;*传入参数说明：</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *book_index_page_url: 小说章节列表页的URL</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *win: litebook主窗口</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *evt: 用于回传的事件，litebook主窗口收到这个事件之后会在状态栏显示evt.Value的内容。</span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;"><ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside;"><ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside;"><ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside;"><ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside;"><ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside;">
+<li class="rvps8" style="margin-left: 0"><span class="rvts8">此事件可以用来向litebook主窗口报告下载进度(wx.PostEvent(win,evt))</span></li>
+</ul></ul></ul></ul></ul></ul>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *proxyserver:HTTP代理服务器地址（IP或域名），类型unicode</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *proxyport: HTTP代理服务器端口，类型unicode</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *proxyuser: HTTP代理服务器认证用户名，类型unicode</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *proxypass: HTTP代理服务器认证口令，类型unicode</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *concurrent：同时下载的线程数，类型int</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *mode：下载模式，类型str，可以为'new'或'update'。'new'代表全部下载, 'update'代表只下载更新的章节</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *last_chapter_count：上次下载的章节总数，类型int，当mode 为'update'时，此参数用来判断是否有更新的章节</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp;*此函数返回一个tuple,包含两个值：</span></p>
+<ol style="text-indent: 0px; margin-left: 24px; list-style-position: outside;"><ol style="text-indent: 0px; margin-left: 48px; list-style-position: outside;"><ol style="text-indent: 0px; margin-left: 48px; list-style-position: outside;"><ol style="text-indent: 0px; margin-left: 48px; list-style-position: outside;"><ol style="text-indent: 0px; margin-left: 48px; list-style-position: outside;">
+<li value="1" class="rvps7" style="margin-left: 0"><span class="rvts8">整合后的小说内容，类型为unicode （如果mode是'update'的话，则只包括更新章节的内容）</span></li>
+<li value="2" class="rvps7" style="margin-left: 0"><span class="rvts8">一个dict，包含如下key:</span></li>
+</ol></ol></ol></ol></ol>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;"><ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside;"><ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside;"><ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside;"><ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside;"><ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside;">
+<li class="rvps9" style="margin-left: 0"><span class="rvts8">"bookname": unicode，小说名称</span></li>
+<li class="rvps9" style="margin-left: 0"><span class="rvts8">"index_url": unicode，小说章节列表页的URL</span></li>
+<li class="rvps9" style="margin-left: 0"><span class="rvts8">"last_chapter_name": unicode，最后一章的标题</span></li>
+<li class="rvps9" style="margin-left: 0"><span class="rvts8">“last_update”: unicode,下载完成的日期和时间</span></li>
+<li class="rvps9" style="margin-left: 0"><span class="rvts8">"chapter_count": 下载的章节总数</span></li>
+</ul></ul></ul></ul></ul></ul>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp; *如果下载失败的话或是没有更新的章节的话，则返回(None, {'index_url":})</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp;*除了返回一个tuple值以外，此函数在下载完成后还可以用如下code向主窗口回传一个事件：</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8"> &nbsp; &nbsp;evt.Value=bookname+u' 下载完毕!' #如果是</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8"> &nbsp; &nbsp;evt.status='ok' #如果是下载失败则设置为"nok"</span></p>
+<p class="rvps6"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8"> &nbsp; &nbsp;wx.PostEvent(win,evt)</span></p>
+<p class="rvps3"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
+<li class="rvps3"><span class="rvts8">插件中还可以包括一个可选的全局变量Description，类型为unicode，其内容主要是插件的简介，特性介绍，使用注意等内容。这些内容会显示在输入搜索关键字对话框的下方。</span></li>
+<li class="rvps3"><span class="rvts8">对HTML页面的解析，litebook内置了lxml，用如下code来import</span></li>
+</ul>
+<p class="rvps3"><span class="rvts8">MYOS = platform.system()</span></p>
+<p class="rvps3"><span class="rvts8">osarch=platform.architecture()</span></p>
+<p class="rvps3"><span class="rvts8">if osarch[1]=='ELF' and MYOS == 'Linux':</span></p>
+<p class="rvps3"><span class="rvts8"> &nbsp; &nbsp;sys.path.append('..')</span></p>
+<p class="rvps3"><span class="rvts8"> &nbsp; &nbsp;if osarch[0]=='64bit':</span></p>
+<p class="rvps3"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;from lxml_linux_64 import html</span></p>
+<p class="rvps3"><span class="rvts8"> &nbsp; &nbsp;elif osarch[0]=='32bit':</span></p>
+<p class="rvps3"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;from lxml_linux import html</span></p>
+<p class="rvps3"><span class="rvts8">elif MYOS == 'Darwin':</span></p>
+<p class="rvps3"><span class="rvts8"> &nbsp; &nbsp;from lxml_osx import html</span></p>
+<p class="rvps3"><span class="rvts8">else:</span></p>
+<p class="rvps3"><span class="rvts8"> &nbsp; &nbsp;from lxml import html</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
+<li class="rvps3"><span class="rvts8">插件的安装</span></li>
+</ul>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;"><ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside;">
+<li class="rvps5" style="margin-left: 0"><span class="rvts8">将写好的python脚本文件(.py)拷贝到plugin的子目录下。</span></li>
+<li class="rvps5" style="margin-left: 0"><span class="rvts8">然后点击菜单"文件-&gt;重新读入插件"使其生效；或者重启litebook亦可。</span></li>
+<li class="rvps5" style="margin-left: 0"><span class="rvts8">建议脚本的文件名格式为：网站名.py</span></li>
+</ul></ul>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps2"><span class="rvts6">Created with the Personal Edition of HelpNDoc: </span><a class="rvts7" href="http://www.helpndoc.com">Easily create Help documents</a></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; 2013 by Hu Jun. All Rights Reserved.</div>
+		</div>
+	</body>
+	
+</html>
+

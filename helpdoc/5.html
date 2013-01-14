@@ -1,0 +1,112 @@
+﻿<html>
+	
+<head>
+	<title>上传到移动设备</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf8">
+    <meta name="generator" content="HelpNDoc">
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript"><!--
+		var sTopicId = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+		if (top.frames.length == 0)
+			top.location.href = "litebook.html?" + sTopicId
+		else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+			top.FrameTOC.SelectTocItem(sTopicId);
+	</script>
+</head>
+
+<body>
+
+	<div id="topic_header">
+			<div id="topic_header_content">
+				<h1>上传到移动设备</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="4.html">功能介绍</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="4.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="4.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="6.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p class="rvps3"><span class="rvts8">从ver2.3开始，litebook支持将电脑中的书上传到移动设备，目前支持如下移动看书APP：</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
+<li class="rvps3"><span class="rvts8">IPHONE/IPAD上的Stanza</span></li>
+<li class="rvps3"><span class="rvts8">IPHONE/IPAD上的iBooks</span></li>
+</ul>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">由于Stanza和iBooks都支持EPUB格式的电子书，因此上传书分为以下步骤：</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<ol style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
+<li value="1" class="rvps3"><span class="rvts8">将图书转化为EPUB格式（如果已经是EPUB格式，那么这步可以跳过）</span></li>
+<li value="2" class="rvps3"><span class="rvts8">将EPUB电子书拷入电脑上的共享目录（或者可以在第一步格式转换将输出目录直接设置为共享目录）</span></li>
+<li value="3" class="rvps3"><span class="rvts8">启用litebook内置的WEB服务器</span></li>
+<li value="4" class="rvps3"><span class="rvts8">使用Stanza/iBooks下载共享的EPUB图书</span></li>
+<hr style="height: 1px; color : #000000;  background-color : #000000; border-width : 0px;"></li>
+</ol>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">Stanza的操作步骤:</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">生成EPUB文件，见下图：</span></p>
+<p class="rvps3"><img border="0" alt hspace="1" vspace="1" src="lib/litebook_Gen_EPUB.png"></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">两种章节划分方式：</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">自动：litebook会自动检测并划分章节</span></p>
+<p class="rvps3"><span class="rvts8">安装字数：安装所输入的字数划分章节</span></p>
+<p class="rvps3"><span class="rvts8">注：输出文件的缺省目录就是缺省的共享文件目录，当前文件名会作为新的EPUB文件名。</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">2.将EPUB文件拷入共享目录，共享目录可以在选项-控制设置里进行选择。如果在第一步中已经将输出文件放在了共享目录中，那么这步可以跳过。</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">3.启用WEB服务器：通过菜单“工具”-》“启用WEB服务器”</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">4.打开Stanza程序，在下方的主菜单中选择“Get Books"。缺省情况下Stanza将自动发现litebook的共享源，如下图所示：</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><img border="0" width="259" height="391" alt hspace="1" vspace="1" src="lib/Stanza.png"></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">选择“litebook_shared“，然后下载图书即可。</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">注1：如果Stanza无法自动发现的话，可以试试先关闭WEB服务器，再启用WEB服务器。</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">注2：要使Stanza自动发现正常工作的话，需要将绑定在WLAN网络接口上（和IPHONE或IPAD在同一个WIFI网络内）。缺省情况下Litebook会自动检测并绑定WLAN网络接口，但是如果自动检测结果不正确的话，可以在“文件”-》“选项”-》“控制设置”中设定所绑定的网络接口。</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">如果Stanza实在无法自动发现litebook的话，也可以按右上方的“+”按钮手动添加源，URL的格式为“http://MY_IP:8000”，其中MY_IP是你电脑的IPv4地址。在windows下可以通过IPCONFIG命令获得，8000是缺省的端口号，你也可以在litebook选项中修改为其他的端口。</span></p>
+<hr style="height: 1px; color : #000000;  background-color : #000000; border-width : 0px;">
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">iBooks 的操作步骤：</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">1，2两步和Stanza相同。</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">3. 打开Safari浏览器，访问http://MY_IP:8000”，其中MY_IP是你电脑的IPv4地址。在windows下可以通过IPCONFIG命令获得，8000是缺省的端口号，你也可以在litebook选项中修改为其他的端口。</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">4.下载你要的书，下载完毕和选择“用iBooks打开”</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8"> </span></p>
+<p class="rvps2"><span class="rvts6">Created with the Personal Edition of HelpNDoc: </span><a class="rvts7" href="http://www.helpndoc.com">Easily create Web Help sites</a></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; 2011 by Hu Jun. All Rights Reserved.</div>
+		</div>
+	</body>
+	
+</html>
+

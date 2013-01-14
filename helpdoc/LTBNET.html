@@ -1,0 +1,88 @@
+﻿<html>
+	
+<head>
+	<title>LTBNET</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf8">
+    <meta name="generator" content="HelpNDoc">
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript"><!--
+		var sTopicId = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+		if (top.frames.length == 0)
+			top.location.href = "litebook.html?" + sTopicId
+		else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+			top.FrameTOC.SelectTocItem(sTopicId);
+	</script>
+</head>
+
+<body>
+
+	<div id="topic_header">
+			<div id="topic_header_content">
+				<h1>LTBNET</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="4.html">功能介绍</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="4.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="4.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href=".html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p class="rvps3"><span class="rvts8">LTBNET (litebook 3.0)</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">1.概述</span></p>
+<p class="rvps3"><span class="rvts8">LTBNET是一个点对点的图书共享网络，litebook的用户可以在这个网络中分享和下载图书。这个网络不依赖于中央服务器，所有的资源都还是存在分享者的机器上，下载者直接从分享者的机器上下载。</span></p>
+<p class="rvps3"><span class="rvts8">－ LTBNET支持基于文件名的搜索。</span></p>
+<p class="rvps3"><span class="rvts8">－ LTBNET本身是一个基于UDP的协议，下载采用HTTP协议。</span></p>
+<p class="rvps3"><span class="rvts8">－ LTBNET随litebook一同发行，litebook从3.0 beta1开始支持这一网络</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">2. 运行</span></p>
+<p class="rvps3"><span class="rvts8">－ LTBNET随着litebook一同启动和关闭</span></p>
+<p class="rvps3"><span class="rvts8">－ LTBNET以独立进程的方式运行</span></p>
+<p class="rvps3"><span class="rvts8">－ LTBNET缺省使用UDP端口50200；内置的WEB服务器缺省使用TCP端口8000。这两个端口都可以在litebook“选项”对话框中修改。</span></p>
+<p class="rvps3"><span class="rvts8">－ litebook会使用UPNP协议自动添加NAT端口转发，用户也可以手工在路由器上添加以上两个端口的转发。注意：如果端口转发没有创建的话，LTBNET无法工作。</span></p>
+<p class="rvps3"><span class="rvts8">－ 图书共享目录目前采用WEB服务器的共享根目录，此目录下的所有后缀名为['txt','html','htm','epub','umd','jar','zip','rar']都会被共享。</span></p>
+<p class="rvps3"><span class="rvts8">－ LTBNET搜索是通过litebook文件菜单中的“搜索LTBNET”进行</span></p>
+<p class="rvps3"><span class="rvts8">－ 搜索到结果之后，可以直接下载，下载进度可以在litebook文件菜单中的“下载管理器”中查看</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">3. 监控</span></p>
+<p class="rvps3"><span class="rvts8">系统提供一个基于命令行方式的监控界面，可以对查看当前LTBNET进程的运行信息，以及关闭进程。</span></p>
+<p class="rvps3"><span class="rvts8">运行方法：</span></p>
+<p class="rvps3"><span class="rvts8">－ Windows：在litebook安装目录下有一个“kadp”的子目录，其中有一个"kadp.exe"文件，运行“kadp.exe -debug"</span></p>
+<p class="rvps3"><span class="rvts8">－ Linux or MAC OSX：在litebook安装目录下，运行"python KADP.py -debug"</span></p>
+<p class="rvps3"><span class="rvts8">命令：</span></p>
+<p class="rvps3"><span class="rvts8">"d 0":开启LOG</span></p>
+<p class="rvps3"><span class="rvts8">"stop":关闭进程</span></p>
+<p class="rvps3"><span class="rvts8">"end":退出</span></p>
+<p class="rvps3"><span class="rvts8">(以下命令需要先执行d 0)</span></p>
+<p class="rvps3"><span class="rvts8">"pc 0":列出当前所有的contact </span></p>
+<p class="rvps3"><span class="rvts8">"pr 0":列出当前已知的所有资源</span></p>
+<p class="rvps3"><span class="rvts8">"printme 0":列出当前的端口号和自己的NodeID</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps2"><span class="rvts6">Created with the Personal Edition of HelpNDoc: </span><a class="rvts7" href="http://www.helpndoc.com">Easily create Web Help sites</a></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; 2013 by Hu Jun. All Rights Reserved.</div>
+		</div>
+	</body>
+	
+</html>
+

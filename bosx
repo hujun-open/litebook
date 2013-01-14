@@ -1,0 +1,10 @@
+#
+#This is build script for MAC OSX
+#
+py32 setup.py py2app
+cp -r icon ./dist/litebook.app/Contents/Resources/
+cp -r background ./dist/litebook.app/Contents/Resources/
+cp -r templates ./dist/litebook.app/Contents/Resources/
+cp -r helpdoc ./dist/litebook.app/Contents/Resources/
+
+

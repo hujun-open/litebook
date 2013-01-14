@@ -1,0 +1,66 @@
+﻿<html>
+	
+<head>
+	<title>缓存</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf8">
+    <meta name="generator" content="HelpNDoc">
+	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
+	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
+	<!--[if lte IE 8]>
+		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
+	<![endif]-->
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/hnd.js"></script>
+	<script type="text/javascript"><!--
+		var sTopicId = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+		if (top.frames.length == 0)
+			top.location.href = "litebook.html?" + sTopicId
+		else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+			top.FrameTOC.SelectTocItem(sTopicId);
+	</script>
+</head>
+
+<body>
+
+	<div id="topic_header">
+			<div id="topic_header_content">
+				<h1>缓存</h1>
+				
+				<div id="topic_breadcrumb">
+					<a href="4.html">功能介绍</a> &rsaquo;&rsaquo; </div>
+				</div>
+			<div id="topic_header_nav">
+				<a href="4.html"><img src="img/arrow_up.png" alt="Parent"/></a>
+				
+				<a href="15.html"><img src="img/arrow_left.png" alt="Previous"/></a>
+				
+				<a href="88.html"><img src="img/arrow_right.png" alt="Next"/></a>
+				
+				</div>
+			<div class="clear"></div>
+		</div>
+	<div id="topic_content">
+		
+<p class="rvps3"><span class="rvts8">Litebook从ver2.2起开始支持缓存功能，此功能的目的主要是为了加快epub和jar文件的载入速度。由于epub和jar文件都是ZIP压缩格式，因此如果其中包含的章节很多的话，每次载入的时候所花费的时间就很长了，为了缩短这个时间，litebook会把第一次打开之后文本另存为一个文本文件存在cache子目录下，这样以后再次打开的时候就直接打开这个文本文件了。</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">注：从ver2.3开始cache子目录位置修改为：</span></p>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
+<li class="rvps3"><span class="rvts8">Windows: C:\Documents and Settings\[用户名]\litebook\cache</span></li>
+<li class="rvps3"><span class="rvts8">Linux: ~/litebook/cache</span></li>
+</ul>
+<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps3"><span class="rvts8">这个特性的代价是会消耗一些硬盘空间，不过就目前普遍上百G的硬盘来讲，问题也不大，当然如果你希望清空这些文件的话，可以用菜单“文件”-》“清空缓存”。</span></p>
+<p class="rvps2"><span class="rvts6">Created with the Personal Edition of HelpNDoc: </span><a class="rvts7" href="http://www.helpndoc.com">Easily create HTML Help documents</a></p>
+</div>
+	
+	<div id="topic_footer">
+
+			<div id="topic_footer_content">
+				Copyright &copy; 2013 by Hu Jun. All Rights Reserved.</div>
+		</div>
+	</body>
+	
+</html>
+

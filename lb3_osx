@@ -1,0 +1,5 @@
+#! /bin/bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+mv $DIR/netifaces_osx.so $DIR/netifaces.so
+export VERSIONER_PYTHON_PREFER_32_BIT=yes
+/usr/bin/python $DIR/litebook.py

@@ -1,0 +1,4 @@
+- change MyFrame.func_list
+- add menu
+- change MyFrame.ResetMenu
+- change keygrid.py LB2_func_list
