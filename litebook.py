@@ -8,7 +8,7 @@
 #
 #
 
-
+import web_download_manager
 import download_manager
 import ltbsearchdiag
 import signal
@@ -119,6 +119,7 @@ except ImportError: # if it's not there locally, try the wxPython lib.
 (DownloadUpdateAlert,EVT_DUA)=wx.lib.newevent.NewEvent()
 (AlertMsgEvt,EVT_AME)=wx.lib.newevent.NewEvent()
 (UpdateEvt,EVT_UPD)=wx.lib.newevent.NewEvent()
+(UpdateValueEvt,EVT_UPDV)=wx.lib.newevent.NewEvent()
 
 
 
@@ -328,8 +329,8 @@ BookMarkList=[]
 ThemeList=[]
 BookDB=[]
 Ticking=True
-Version='3.0 '+MYOS
-I_Version=3.00 # this is used to check updated version
+Version='3.1 i '+MYOS
+I_Version=3.10 # this is used to check updated version
 lb_hash='3de03ac38cc1c2dc0547ee09f866ee7b'
 
 def cur_file_dir():
@@ -559,7 +560,12 @@ def GenCatalog(instr,divide_method=0,zishu=10000):
                 chapter=instr[pos1:pos2].strip()
 ##                if chapter == last_chapter:
 ##                    continue
-                rlist.append([chapter,pos1])
+                if len(rlist)>0:
+                    if pos1-rlist[-1:][0][1]>80: #to remove dup title lines
+                        rlist.append([chapter,pos1])
+                else:
+                    rlist.append([chapter,pos1])
+
 ##                rlist[chapter]=pos1
 ##                c_list.append(chapter)
 ##                last_chapter = chapter
@@ -1814,7 +1820,7 @@ def umd_field_decode(fp,pos):
     """" This function is to decode each field inside umd file"""
     fp.seek(pos)
     field_type_list={2:'title',3:'author',4:'year',5:'month',6:'day',7:'gender',8:'publisher',9:'vendor'}
-    dtype=struct.unpack('H',fp.read(2))
+    dtype=struct.unpack('=H',fp.read(2))
     if dtype[0]<>11:
         field_type=field_type_list[dtype[0]]
         field_value=u''
@@ -1826,7 +1832,7 @@ def umd_field_decode(fp,pos):
         fp.seek(i,0)
         m=i
         while m<i+field_len:
-            onechar=unichr(struct.unpack('H',fp.read(2))[0])
+            onechar=unichr(struct.unpack('=H',fp.read(2))[0])
             field_value+=onechar
             m+=2
             fp.seek(m)
@@ -1834,26 +1840,26 @@ def umd_field_decode(fp,pos):
         field_type='content'
         pos+=4
         fp.seek(pos,0)
-        field_len=struct.unpack('I',fp.read(4))[0]
+        field_len=struct.unpack('=I',fp.read(4))[0]
         pos+=5
         fp.seek(pos,0)
 ##        print field_len
-        chapter_type=struct.unpack('H',fp.read(2))[0]
+        chapter_type=struct.unpack('=H',fp.read(2))[0]
 ##        print hex(chapter_type)
 
         pos+=4
         fp.seek(pos,0)
-        r1=struct.unpack('I',fp.read(4))[0]
+        r1=struct.unpack('=I',fp.read(4))[0]
 ##        print "random-1 is "+str(hex(r1))
 
         pos+=5
         fp.seek(pos,0)
-        r2=struct.unpack('I',fp.read(4))[0]
+        r2=struct.unpack('=I',fp.read(4))[0]
 ##        print "random-2 is "+str(hex(r2))
 
         pos+=4
         fp.seek(pos,0)
-        offset_len=struct.unpack('I',fp.read(4))[0]-9
+        offset_len=struct.unpack('=I',fp.read(4))[0]-9
 ##        print "offset_len is "+str(offset_len)
 
         i=0
@@ -1861,7 +1867,7 @@ def umd_field_decode(fp,pos):
         fp.seek(pos,0)
         chapter_offset=[]
         while i<offset_len:
-            chapter_offset.append(struct.unpack('I',fp.read(4))[0])
+            chapter_offset.append(struct.unpack('=I',fp.read(4))[0])
             i+=4
             fp.seek(pos+i,0)
 ##        print "chapter offsets are:"
@@ -1869,33 +1875,33 @@ def umd_field_decode(fp,pos):
 
         pos+=offset_len+1
         fp.seek(pos,0)
-        ch_t_type=struct.unpack('H',fp.read(2))[0]
+        ch_t_type=struct.unpack('=H',fp.read(2))[0]
 ##        print "ch_title_type is "+str(hex(ch_t_type))
 
         pos+=4
         fp.seek(pos,0)
-        r3=struct.unpack('I',fp.read(4))[0]
+        r3=struct.unpack('=I',fp.read(4))[0]
 ##        print "random-3 is "+str(hex(r3))
 
         pos+=5
         fp.seek(pos,0)
-        r4=struct.unpack('I',fp.read(4))[0]
+        r4=struct.unpack('=I',fp.read(4))[0]
 ##        print "random-4 is "+str(hex(r4))
 
         pos+=4
         fp.seek(pos,0)
-        ch_title_len=struct.unpack('I',fp.read(4))[0]-9
+        ch_title_len=struct.unpack('=I',fp.read(4))[0]-9
         m=0
         pos+=4
         fp.seek(pos,0)
         while m<ch_title_len:
-            t_len=ord(struct.unpack('c',fp.read(1))[0])
+            t_len=ord(struct.unpack('=c',fp.read(1))[0])
             pos+=1
             fp.seek(pos,0)
             n=pos
             t_val=u''
             while n<pos+t_len:
-                onechar=unichr(struct.unpack('H',fp.read(2))[0])
+                onechar=unichr(struct.unpack('=H',fp.read(2))[0])
                 t_val+=onechar
                 n+=2
                 fp.seek(n)
@@ -1954,7 +1960,7 @@ def umd_field_decode(fp,pos):
         if fp.read(1)=='#':
             pos+=1
             fp.seek(pos,0)
-            m_tag=struct.unpack('H',fp.read(2))[0]
+            m_tag=struct.unpack('=H',fp.read(2))[0]
         else:
             m_tag=0
 
@@ -1965,7 +1971,7 @@ def umd_field_decode(fp,pos):
                 if m_tag==0xa:
                     pos+=4
                     fp.seek(pos,0)
-                    R1=struct.unpack('I',fp.read(4))[0]
+                    R1=struct.unpack('=I',fp.read(4))[0]
 ##                    print "Random-1 is "+str(hex(R1))
                     pos+=4
                 else:
@@ -1975,14 +1981,14 @@ def umd_field_decode(fp,pos):
 ##                        print fp.read(1)
                         pos+=5
                         fp.seek(pos,0)
-                        page_count=struct.unpack('I',fp.read(4))[0]-9
+                        page_count=struct.unpack('=I',fp.read(4))[0]-9
                         pos+=page_count+4
 
                     else:
                         if m_tag==0x87:
                             pos+=15
                             fp.seek(pos,0)
-                            offset_len=struct.unpack('I',fp.read(4))[0]-9
+                            offset_len=struct.unpack('=I',fp.read(4))[0]-9
 ##                            print "offset_len is "+str(offset_len)
 ##                            i=0
                             pos+=4+offset_len
@@ -2043,7 +2049,7 @@ def umd_field_decode(fp,pos):
             if xxx=='#':
                 pos+=1
                 fp.seek(pos,0)
-                m_tag=struct.unpack('H',fp.read(2))[0]
+                m_tag=struct.unpack('=H',fp.read(2))[0]
             else:
                 m_tag=0
 ##        print type(content)
@@ -2060,7 +2066,7 @@ def umd_decode(infile):
     umdinfo={}
     f=open(infile,'rb')
     bytes=f.read(4)
-    tag=struct.unpack('cccc',bytes)
+    tag=struct.unpack('=cccc',bytes)
     if tag<>('\x89', '\x9b', '\x9a', '\xde'): return False # check if the file is the umd file
     f.seek(9)
     ftype=ord(f.read(1))
@@ -2421,6 +2427,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
     u'搜索LTBNET':'self.Menu113(None)',
     u'下载管理器':'self.Menu114(None)',
     u'管理订阅':'self.Menu115(None)',
+    u'WEB下载管理器':'self.Menu116(None)',
     }
 
     def __init__(self,parent,openfile=None):
@@ -2432,6 +2439,9 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         self.cnsort=cnsort()
         self.last_search_pos=False
         self.title_str=u'litebook 轻巧读书'
+        self.AllowUpdate = False
+        self.streamID = 0
+        self.currentSID=self.streamID
 
         # begin wxGlade: MyFrame.__init__
         #kwds["style"] = wx.DEFAULT_FRAME_STYLE
@@ -2496,6 +2506,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         wxglade_tmp_menu.Append(109, u"以往打开文件历史", u"显示曾经打开的所有文件列表", wx.ITEM_NORMAL)
         wxglade_tmp_menu.AppendSeparator()
         wxglade_tmp_menu.Append(110, u"搜索小说网站(&S)"+KeyMenuList[u'搜索小说网站'], u"搜索小说网站", wx.ITEM_NORMAL)
+        wxglade_tmp_menu.Append(116, u"WEB下载管理器"+KeyMenuList[u'WEB下载管理器'], u"WEB下载管理器", wx.ITEM_NORMAL)
         wxglade_tmp_menu.Append(115, u"管理订阅"+KeyMenuList[u'管理订阅'], u"管理订阅", wx.ITEM_NORMAL)
         wxglade_tmp_menu.Append(111, u"重新载入插件"+KeyMenuList[u'重新载入插件'], u"重新载入插件", wx.ITEM_NORMAL)
         wxglade_tmp_menu.AppendSeparator()
@@ -2592,6 +2603,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         self.Bind(wx.EVT_MENU, self.Menu113, id=113)
         self.Bind(wx.EVT_MENU, self.Menu114, id=114)
         self.Bind(wx.EVT_MENU, self.Menu115, id=115)
+        self.Bind(wx.EVT_MENU, self.Menu116, id=116)
         self.Bind(wx.EVT_MENU, self.Menu202, id=202)
         self.Bind(wx.EVT_MENU, self.Menu203, id=203)
         self.Bind(wx.EVT_MENU, self.Menu204, id=204)
@@ -2666,7 +2678,8 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         self.Bind(EVT_UPDATE_STATUSBAR,self.UpdateStatusBar)
         self.Bind(EVT_ReadTimeAlert,self.ReadTimeAlert)
         self.Bind(EVT_DFA,self.DownloadFinished)
-        self.Bind(EVT_DUA,self.UpdateStatusBar)
+##        self.Bind(EVT_DUA,self.UpdateStatusBar)
+        self.Bind(EVT_DUA,self.UpdateWebDownloadProgress)
         self.Bind(EVT_AME,self.AlertMsg)
         self.Bind(EVT_ScrollDownPage,self.scrolldownpage)
 ##        self.Bind(EVT_GetPos,self.getPos)
@@ -2676,6 +2689,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         self.Bind(wx.EVT_SIZE,self.onSize)
         self.list_ctrl_1.Bind(wx.EVT_CHAR,self.OnDirChar)
         self.Bind(wx.EVT_TEXT,self.SearchSidebar,self.text_ctrl_2)
+        self.Bind(EVT_UPDV,self.UpdateValue)
 #        self.text_ctrl_1.Bind(wx.EVT_MIDDLE_DCLICK,self.MyMouseMDC)
 #        self.text_ctrl_1.Bind(wx.EVT_RIGHT_DOWN,self.MyMouseRU)
 #        self.text_ctrl_1.Bind(wx.EVT_MOUSEWHEEL,self.MyMouseMW)
@@ -2848,6 +2862,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
                 self.mDNS_svc=Zeroconf.ServiceInfo("_opds._tcp.local.", "litebook_shared._opds._tcp.local.", socket.inet_aton(host_ip), GlobalConfig['ServerPort'], 0, 0, {'version':'0.10'})
                 self.mDNS.registerService(self.mDNS_svc)
 
+        self.WebDownloadManager=web_download_manager.WebDownloadManager(self)
         #start KADP
         self.KPUB_thread=None
         self.DownloadManager=None
@@ -2916,6 +2931,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         tlist={'paper':61,'book':62,'vbook':63}
         self.ViewMenu.Check(mlist[GlobalConfig['showmode']],True)
         self.frame_1_toolbar.ToggleTool(tlist[GlobalConfig['showmode']],True)
+        self.frame_1_menubar.Check(501,self.frame_1_toolbar.IsShown())
 
         self.websubscrdlg=None
 
@@ -3101,6 +3117,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         mbar.SetLabel(113, u"搜索LTBNET"+KeyMenuList[u'搜索LTBNET'])
         mbar.SetLabel(114, u"下载管理器"+KeyMenuList[u'下载管理器'])
         mbar.SetLabel(115, u"管理订阅"+KeyMenuList[u'管理订阅'])
+        mbar.SetLabel(116, u"WEB下载管理器"+KeyMenuList[u'WEB下载管理器'])
         mbar.SetLabel(106,u"选项(&O)"+KeyMenuList[u'选项'])
         mbar.SetLabel(107,u"退出(&X)"+KeyMenuList[u'退出'])
         mbar.SetLabel(202,u"拷贝(&C)"+KeyMenuList[u'拷贝'])
@@ -3338,6 +3355,8 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         else:
             self.websubscrdlg.ShowModal()
 
+    def Menu116(self,evt):
+        self.WebDownloadManager.Show()
 
     def Menu202(self, event): # wxGlade: MyFrame.<event_handler>
         self.text_ctrl_1.CopyText()
@@ -3411,7 +3430,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         info = wx.AboutDialogInfo()
         info.Name = self.title_str
         info.Version = Version
-        info.Copyright = "(C) 2012 Hu Jun"
+        info.Copyright = "(C) 2013 Hu Jun"
         info.Description = u"轻巧看书，简单好用的看书软件！"
 
         info.WebSite = (u"http://code.google.com/p/litebook-project/", u"官方网站")
@@ -3433,6 +3452,8 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
             self.SetToolBar(None)
             self.Refresh()
             self.Layout()
+
+        self.frame_1_menubar.Check(501,self.frame_1_toolbar.IsShown())
 
 
     def CloseSidebar(self,evt=None):
@@ -3538,11 +3559,13 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         self.ChangeFontSize(-1)
 
     def reloadMulu(self):
-        if self.cur_catalog==None:
-            rlist=GenCatalog(self.text_ctrl_1.GetValue())
-            self.cur_catalog=rlist
-        else:
-            rlist=self.cur_catalog
+##        if self.cur_catalog==None:
+##            rlist=GenCatalog(self.text_ctrl_1.GetValue())
+##            self.cur_catalog=rlist
+##        else:
+##            rlist=self.cur_catalog
+        rlist=GenCatalog(self.text_ctrl_1.GetValue())
+        self.cur_catalog=rlist
         self.list_ctrl_mulu.DeleteAllItems()
         i=0
         for c in rlist:
@@ -3570,11 +3593,13 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
             - current chapter name
             - current index in rlist
         """
-        if self.cur_catalog==None:
-            rlist=GenCatalog(self.text_ctrl_1.GetValue())
-            self.cur_catalog=rlist
-        else:
-            rlist=self.cur_catalog
+##        if self.cur_catalog==None:
+##            rlist=GenCatalog(self.text_ctrl_1.GetValue())
+##            self.cur_catalog=rlist
+##        else:
+##            rlist=self.cur_catalog
+        rlist=GenCatalog(self.text_ctrl_1.GetValue())
+        self.cur_catalog=rlist
         c_pos=self.text_ctrl_1.GetStartPos()
         i=0
         for cc in rlist:
@@ -4205,6 +4230,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         self.SetTitle(self.title_str+filepath[0])
         self.cur_catalog=None
         self.text_ctrl_1.SetFocus()
+        self.AllowUpdate = False
         ldlg.Destroy()
 
 
@@ -5261,7 +5287,12 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         else:
             self.slider.Closeme()
 
+    def UpdateValue(self,evt):
+        if self.AllowUpdate == True and self.streamID==evt.sid:
+            self.text_ctrl_1.AppendValue(evt.value)
 
+    def UpdateWebDownloadProgress(self,evt):
+        self.WebDownloadManager.updateProgress(evt.Value,evt.url)
 
 class MyOpenFileDialog(wx.Dialog,wx.lib.mixins.listctrl.ColumnSorterMixin):
     global GlobalConfig
@@ -7004,6 +7035,7 @@ class web_search_result_dialog(wx.Dialog):
         self.list_ctrl_1.InsertColumn(5,u'网站')
         self.button_1 = wx.Button(self, -1, u" 下载(后台) ")
         self.button_2 = wx.Button(self, -1, u" 取消 ")
+        self.button_stream = wx.Button(self, -1, u" 边下载边看 ")
 
 
         dlg = wx.ProgressDialog(u"搜索中",
@@ -7078,6 +7110,8 @@ class web_search_result_dialog(wx.Dialog):
             return None
         self.Bind(wx.EVT_BUTTON, self.OnOK, self.button_1)
         self.Bind(wx.EVT_BUTTON, self.OnCancell, self.button_2)
+        self.Bind(wx.EVT_BUTTON, self.OnStream, self.button_stream)
+
         self.list_ctrl_1.Bind(wx.EVT_CHAR,self.OnKey)
         self.__set_properties()
         self.__do_layout()
@@ -7096,14 +7130,36 @@ class web_search_result_dialog(wx.Dialog):
         sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_1.Add(self.list_ctrl_1, 1, wx.EXPAND, 0)
         sizer_2.Add(self.button_1, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        sizer_2.Add(self.button_stream, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
         sizer_2.Add(self.button_2, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
         sizer_1.Add(sizer_2, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5)
         self.SetSizer(sizer_1)
         sizer_1.Fit(self)
         self.Layout()
 
-    def OnOK(self, event):
+    def Download(self,item,mode='down'):
         global PluginList
+        siten=self.list_ctrl_1.GetItem(item,5).GetText()
+        self.GetParent().WebDownloadManager.addTask(
+                            {
+                            'site':siten,
+                            'bkname':self.list_ctrl_1.GetItem(item,0).GetText(),
+                            'size':self.list_ctrl_1.GetItem(item,3).GetText(),
+                            'url':self.rlist[self.list_ctrl_1.GetItemData(item)]['book_index_url'],
+                            }
+        )
+        self.GetParent().DT=DownloadThread(self.GetParent(),
+            self.rlist[self.list_ctrl_1.GetItemData(item)]['book_index_url'],
+            PluginList[siten+'.py'],
+            self.list_ctrl_1.GetItemText(item),siten+'.py',
+            mode,
+            self.GetParent().WebDownloadManager.tasklist[self.rlist[self.list_ctrl_1.GetItemData(item)]['book_index_url']],
+            )
+
+        self.Destroy()
+
+    def OnStream(self,evt):
+        global OnScreenFileList
         item=self.list_ctrl_1.GetNextSelected(-1)
         if item==-1:
             dlg = wx.MessageDialog(self, u'没有任何小说被选中！',
@@ -7113,10 +7169,29 @@ class web_search_result_dialog(wx.Dialog):
             dlg.ShowModal()
             dlg.Destroy()
             return
-        siten=self.list_ctrl_1.GetItem(item,5).GetText()
+        self.GetParent().Menu103(None)
+        bkname=self.list_ctrl_1.GetItem(item,0).GetText()
+        OnScreenFileList=[]
+        OnScreenFileList.append((bkname,'',len(bkname)))
+        #change the title
+        self.GetParent().SetTitle(self.GetParent().title_str+' --- '+bkname)
+        self.GetParent().cur_catalog=None
+        self.GetParent().AllowUpdate = True
+        self.Download(item,'stream')
 
-        self.GetParent().DT=DownloadThread(self.GetParent(),self.rlist[self.list_ctrl_1.GetItemData(item)]['book_index_url'],PluginList[siten+'.py'],self.list_ctrl_1.GetItemText(item),siten+'.py')
-        self.Destroy()
+
+    def OnOK(self, event):
+        item=self.list_ctrl_1.GetNextSelected(-1)
+        if item==-1:
+            dlg = wx.MessageDialog(self, u'没有任何小说被选中！',
+                                   u'错误',
+                                   wx.OK | wx.ICON_ERROR
+                                   )
+            dlg.ShowModal()
+            dlg.Destroy()
+            return
+        self.Download(item)
+
 
     def OnCancell(self, event):
         self.Destroy()
@@ -7396,17 +7471,21 @@ class UpdateThread:
 
     def run(self):
         evt2=DownloadUpdateAlert(Value='',FieldNum=3)
-        self.bk,bkstate=self.plugin.GetBook(self.url,bkname=self.bookname,
-                            win=self.win,evt=evt2,
-                            useproxy=GlobalConfig['useproxy'],
-                            proxyserver=GlobalConfig['proxyserver'],
-                            proxyport=GlobalConfig['proxyport'],
-                            proxyuser=GlobalConfig['proxyuser'],
-                            proxypass=GlobalConfig['proxypass'],
-                            concurrent=GlobalConfig['numberofthreads'],
-                            mode='update',
-                            last_chapter_count=self.last_chcount
-                            )
+        try:
+            self.bk,bkstate=self.plugin.GetBook(self.url,bkname=self.bookname,
+                                win=self.win,evt=evt2,
+                                useproxy=GlobalConfig['useproxy'],
+                                proxyserver=GlobalConfig['proxyserver'],
+                                proxyport=GlobalConfig['proxyport'],
+                                proxyuser=GlobalConfig['proxyuser'],
+                                proxypass=GlobalConfig['proxypass'],
+                                concurrent=GlobalConfig['numberofthreads'],
+                                mode='update',
+                                last_chapter_count=self.last_chcount
+                                )
+        except:
+            self.bk=None
+            bkstate={'index_url':url}
         if self.bk<>None:
             evt1=UpdateEvt(name=self.bookname,status='ok',
                             bk=self.bk,bookstate=bkstate,
@@ -7417,12 +7496,15 @@ class UpdateThread:
         wx.PostEvent(self.win,evt1)
 
 class DownloadThread:
-    def __init__(self,win,url,plugin,bookname,plugin_name=None):
+    def __init__(self,win,url,plugin,bookname,plugin_name=None,mode='down',
+                    control=None):
         self.win=win
         self.url=url
         self.plugin=plugin
         self.plugin_name=plugin_name
         self.bookname=bookname
+        self.mode=mode
+        self.control=control
         #self.running=True
         thread.start_new_thread(self.run, ())
 
@@ -7430,8 +7512,24 @@ class DownloadThread:
 ##        self.running=False
 
     def run(self):
-        evt2=DownloadUpdateAlert(Value='',FieldNum=3)
-        self.bk,bkstate=self.plugin.GetBook(self.url,bkname=self.bookname,win=self.win,evt=evt2,useproxy=GlobalConfig['useproxy'],proxyserver=GlobalConfig['proxyserver'],proxyport=GlobalConfig['proxyport'],proxyuser=GlobalConfig['proxyuser'],proxypass=GlobalConfig['proxypass'],concurrent=GlobalConfig['numberofthreads'])
+        evt2=DownloadUpdateAlert(Value='',url=self.url)
+        if self.mode=='stream':
+            self.win.streamID+=1
+            evt3=UpdateValueEvt(value='',sid=self.win.streamID)
+        else:
+            evt3=None
+        self.bk,bkstate=self.plugin.GetBook(self.url,bkname=self.bookname,
+                            win=self.win,evt=evt2,
+                            useproxy=GlobalConfig['useproxy'],
+                            proxyserver=GlobalConfig['proxyserver'],
+                            proxyport=GlobalConfig['proxyport'],
+                            proxyuser=GlobalConfig['proxyuser'],
+                            proxypass=GlobalConfig['proxypass'],
+                            concurrent=GlobalConfig['numberofthreads'],
+                            dmode=self.mode,
+                            sevt=evt3,
+                            control=self.control,
+                            )
         if self.bk<>None:
             evt1=DownloadFinishedAlert(name=self.bookname,status='ok',bk=self.bk,bookstate=bkstate,plugin_name=self.plugin_name)
         else:
@@ -9595,8 +9693,9 @@ class ThreadAddUPNPMapping(threading.Thread):
         ]
         r=False
         try:
-            r=myup.changePortMapping(ml)
-        except:
+            r=myup.changePortMapping(ml,'add')
+        except Exception as inst:
+            print inst
             pass
         if r==False:
             evt=AlertMsgEvt(txt=u'UPNP端口映射设置失败！请手动设置宽带路由器并添加相应的端口映射。')

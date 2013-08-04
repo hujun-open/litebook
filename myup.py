@@ -44,9 +44,11 @@ def getDRIntIP(gwip):
     return the 1st interface ip that in the the same subnet of gwip
     """
     for ifname in netifaces.interfaces(): #return addr of 1st network interface
-        if 2 in netifaces.ifaddresses(ifname):
+        #print netifaces.ifaddresses(ifname)
+        if 2 in netifaces.ifaddresses(ifname) and 'netmask' in netifaces.ifaddresses(ifname)[2][0] :
             if_addr = netifaces.ifaddresses(ifname)[2][0]['addr']
             if if_addr != '127.0.0.1' and if_addr != None and if_addr != '':
+                #print  netifaces.ifaddresses(ifname)[2][0]
                 if_mask = netifaces.ifaddresses(ifname)[2][0]['netmask']
                 if insubnet(if_addr,if_mask,gwip) == True:
                     return if_addr
@@ -188,7 +190,7 @@ def changePortMapping(mapping_list,method='add'):
     sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
     sock.bind(('',1910))
     sock.sendto(up_disc, ("239.255.255.250", 1900))
-    sock.settimeout(3.0)
+    sock.settimeout(10.0)
     data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
     internal_ip = getDRIntIP(addr[0])
 ##    print "internal_ip is ",internal_ip

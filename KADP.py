@@ -3293,6 +3293,19 @@ class tXMLSvr(XMLRPC):
     def xmlrpc_printme(self, dump):
         return self.proto.printme()
 
+    def PingCallback(self, r):
+        if r['result'] == False:  # if timeout
+            print "timeout"
+        elif r['result'] == True:
+            print "Alive!"
+        del self.proto.req_list[r['seq']]
+
+    def xmlrpc_Ping(self,hexids,addr,port):
+        ID=longbin.LongBin(binstr=hexids.decode('hex_codec'))
+        dstnode=KADNode(ID,ip=addr,port=int(port))
+        self.proto.Ping(dstnode,self.PingCallback)
+        return "ok"
+
 def KShell(proc_list):
     """
     A debug CLI
@@ -3405,6 +3418,11 @@ def KShell(proc_list):
             if i != None:
                 print 'clist is', clist[2]
                 proc_list[i]['debug'].publish(clist[2])
+            continue
+
+        if clist[0] == 'ping':  # publish a keyword
+            if i != None:
+                proc_list[i]['debug'].Ping(clist[2],clist[3],clist[4])
             continue
 
         if clist[0] == 'gb':  # get 1st idle bucket

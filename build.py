@@ -4,6 +4,7 @@ import py2exe
 import os,sys
 import shutil
 
+
 def myignore(src,name):
     return (['.svn',])
 
@@ -22,6 +23,7 @@ data_files=[('templates', glob.glob('templates/*.*')),
             ],
 options = {'py2exe': {'bundle_files': 3,'compressed':False,'optimize':2,
             'includes': ['lxml.etree',
+
                          'lxml._elementpath',
                          'lxml.html',
                          'gzip',
@@ -29,6 +31,7 @@ options = {'py2exe': {'bundle_files': 3,'compressed':False,'optimize':2,
                          'ctypes.*',
 
                          ],
+            'packages':['netifaces',],
             'excludes': [
                         "pywin", "pywin.debugger", "pywin.debugger.dbgcon",
                         "pywin.dialogs", "pywin.dialogs.list",

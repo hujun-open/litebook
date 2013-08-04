@@ -999,6 +999,16 @@ class LiteView(wx.ScrolledWindow):
         self.Refresh()
         self.ReDraw()
 
+    def AppendValue(self,txt):
+        """
+        append txt to current value and keep current_pos
+        """
+        txt=txt.replace("\r\n","\n")
+        self.ValueCharCount+=len(txt)
+        self.Value+=txt
+        #self.Refresh()
+        self.ReDraw()
+
     def JumpTo(self,pos):
         self.current_pos=pos
         self.start_pos=0

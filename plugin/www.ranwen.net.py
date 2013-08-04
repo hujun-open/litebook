@@ -41,12 +41,13 @@ import Queue
 from datetime import datetime
 
 Description=u"""支持的网站: http://www.ranwen.net/
-插件版本：1.0
-发布时间: 2013-01-02
+插件版本：2.0
+发布时间: 2013-01-18
 简介：
     - 支持多线程下载
     - 关键字不能为空
     - 支持HTTP代理
+    - 支持流看
 作者：litebook.author@gmail.com
 """
 
@@ -204,12 +205,15 @@ def GetSearchResults(key,useproxy=False,proxyserver='',proxyport=0,proxyuser='',
     else:#means the search result is a direct hit, the result page is the book portal page
         #rtable=doc.xpath('//*[@id="content"]/div[2]/div[2]/table')
         r={}
-        r['bookname']=doc.xpath('//*[@id="content"]/div[2]/div[2]/table/tr/td/table/tbody/tr[1]/td/table/tr[1]/td/h1')[0].text
-        r['bookstatus']=doc.xpath('//*[@id="content"]/div[2]/div[2]/table/tr/td/table/tbody/tr[1]/td/table/tr[2]/td[2]/table/tr[1]/td[4]')[0].text
-        r['lastupdatetime']=doc.xpath('//*[@id="content"]/div[2]/div[2]/table/tr/td/table/tbody/tr[1]/td/table/tr[2]/td[2]/table/tr[1]/td[6]')[0].text
-        r['authorname']=doc.xpath('//*[@id="content"]/div[2]/div[2]/table/tr/td/table/tbody/tr[1]/td/table/tr[2]/td[2]/table/tr[2]/td[6]/a/b')[0].text
-        r['book_index_url']=doc.xpath('//*[@id="content"]/div[2]/div[2]/table/tr/td/table/tbody/tr[1]/td/table/tr[2]/td[2]/table/tr[4]/td/div/b/a[1]')[0].get('href')
-        r['booksize']=''
+        try:
+            r['bookname']=doc.xpath('//*[@id="content"]/div[2]/div[2]/table/tr/td/table/tbody/tr[1]/td/table/tr[1]/td/h1')[0].text
+            r['bookstatus']=doc.xpath('//*[@id="content"]/div[2]/div[2]/table/tr/td/table/tbody/tr[1]/td/table/tr[2]/td[2]/table/tr[1]/td[4]')[0].text
+            r['lastupdatetime']=doc.xpath('//*[@id="content"]/div[2]/div[2]/table/tr/td/table/tbody/tr[1]/td/table/tr[2]/td[2]/table/tr[1]/td[6]')[0].text
+            r['authorname']=doc.xpath('//*[@id="content"]/div[2]/div[2]/table/tr/td/table/tbody/tr[1]/td/table/tr[2]/td[2]/table/tr[2]/td[6]/a/b')[0].text
+            r['book_index_url']=doc.xpath('//*[@id="content"]/div[2]/div[2]/table/tr/td/table/tbody/tr[1]/td/table/tr[2]/td[2]/table/tr[4]/td/div/b/a[1]')[0].get('href')
+            r['booksize']=''
+        except:
+            return []
 ##        for k,v in r.items():
 ##            print k,v
         return [r]
@@ -217,10 +221,13 @@ def GetSearchResults(key,useproxy=False,proxyserver='',proxyport=0,proxyuser='',
 
 def GetBook(url,bkname='',win=None,evt=None,useproxy=False,proxyserver='',
             proxyport=0,proxyuser='',proxypass='',concurrent=10,
-            mode='new',last_chapter_count=0,):
+            mode='new',last_chapter_count=0,dmode='down',sevt=None,control=[]):
     """
     mode is either 'new' or 'update', default is 'new', update is used to
     retrie the updated part
+    dmode is either 'down' or 'stream'
+    sevt is the event for stream
+    if control != [] then download will stop (because list is mutable type, boolean is not)
     """
     bb=''
     cv=threading.Lock()
@@ -269,15 +276,24 @@ def GetBook(url,bkname='',win=None,evt=None,useproxy=False,proxyserver='',
         i+=1
     tlist=[]
     for x in range(concurrent):
-        tlist.append(NewDThread(Q,useproxy,proxyserver,proxyport,proxyuser,proxypass,tr,cv))
+        tlist.append(NewDThread(Q,useproxy,proxyserver,proxyport,proxyuser,
+                                proxypass,tr,cv))
+    i=0
     while True:
+        if control!=[]:
+            return None, {'index_url':url}
         qlen=Q.qsize()
         if Q.empty():
             Q.join()
             break
         percent=int((float(ccount-qlen)/float(ccount))*100)
-        evt.Value=u'正在下载 '+bkname+u' '+str(percent)+'%'
+        evt.Value=str(percent)+'%'
         wx.PostEvent(win,evt)
+        if dmode=='stream':
+            if tr[i] != -1:
+                sevt.value=clist[i]['cname'][0]+tr[i]
+                wx.PostEvent(win,sevt)
+                i+=1
         time.sleep(1)
     i=0
     bb=u''
@@ -289,7 +305,7 @@ def GetBook(url,bkname='',win=None,evt=None,useproxy=False,proxyserver='',
 
     if not isinstance(bb,unicode):
         bb=bb.decode('GBK','ignore')
-    evt.Value=bkname+u' 下载完毕!'
+    evt.Value=u'下载完毕!'
     evt.status='ok'
     bookstate={}
     bookstate['bookname']=bkname
