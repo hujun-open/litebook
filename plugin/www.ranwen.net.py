@@ -41,8 +41,8 @@ import Queue
 from datetime import datetime
 
 Description=u"""支持的网站: http://www.ranwen.net/
-插件版本：2.0
-发布时间: 2013-01-18
+插件版本：2.1
+发布时间: 2013-08-4
 简介：
     - 支持多线程下载
     - 关键字不能为空
@@ -109,7 +109,8 @@ def htmname2uni(htm):
 def htm2txt(inf):
     """ extract the text context"""
     doc=html.document_fromstring(inf)
-    content=doc.xpath('//*[@id="bgdiv"]/table[2]/tbody/tr[1]/td/table/tbody/tr')
+    #content=doc.xpath('//*[@id="bgdiv"]/table[2]/tbody/tr[1]/td/table/tbody/tr')
+    content=doc.xpath('//*[@id="content"]')
     htmls=html.tostring(content[0],False)
     htmls=htmls.replace('<br>','\n')
     htmls=htmls.replace('<p>','\n')
