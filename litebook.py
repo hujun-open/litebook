@@ -988,8 +988,8 @@ def readConfigFile():
         GlobalConfig['ServerPort']=8000
         GlobalConfig['mDNS_interface']='AUTO'
         GlobalConfig['ToolSize']=32
-        GlobalConfig['RunUPNPAtStartup']=True
-        GlobalConfig['EnableLTBNET']=True
+        GlobalConfig['RunUPNPAtStartup']=False
+        GlobalConfig['EnableLTBNET']=False
 
         return
 
@@ -1001,12 +1001,12 @@ def readConfigFile():
     try:
         GlobalConfig['RunUPNPAtStartup']=config.getboolean('settings','RunUPNPAtStartup')
     except:
-        GlobalConfig['RunUPNPAtStartup']=True
+        GlobalConfig['RunUPNPAtStartup']=False
 
     try:
         GlobalConfig['EnableLTBNET']=config.getboolean('settings','EnableLTBNET')
     except:
-        GlobalConfig['EnableLTBNET']=True
+        GlobalConfig['EnableLTBNET']=False
 
     try:
         GlobalConfig['RunWebserverAtStartup']=config.getboolean('settings','RunWebserverAtStartup')
@@ -2815,38 +2815,52 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
             self.upnp_t = ThreadAddUPNPMapping(self)
             self.upnp_t.start()
         #starting web server if configured
+##        self.server=None
+##        try:
+##            self.server = ThreadedLBServer(('', GlobalConfig['ServerPort']), LBHTTPRequestHandler)
+##        except socket.error:
+##            splash_frame.Close()
+##            dlg = wx.MessageDialog(self,u'端口'+
+##                str(GlobalConfig['ServerPort'])+
+##                u'已被占用，WEB服务器无法启动！或许是因为litebook已经在运行？',
+##               u'出错了！',
+##               wx.OK | wx.ICON_ERROR
+##               )
+##            dlg.ShowModal()
+##            dlg.Destroy()
+##        else:
         self.server=None
-        try:
-            self.server = ThreadedLBServer(('', GlobalConfig['ServerPort']), LBHTTPRequestHandler)
-        except socket.error:
-            splash_frame.Close()
-            dlg = wx.MessageDialog(self,u'端口'+
-                str(GlobalConfig['ServerPort'])+
-                u'已被占用，WEB服务器无法启动！或许是因为litebook已经在运行？',
-               u'出错了！',
-               wx.OK | wx.ICON_ERROR
-               )
-            dlg.ShowModal()
-            dlg.Destroy()
-        else:
+        if GlobalConfig['RunWebserverAtStartup']:
+
+            try:
+                self.server = ThreadedLBServer(('', GlobalConfig['ServerPort']), LBHTTPRequestHandler)
+            except socket.error:
+                splash_frame.Close()
+                dlg = wx.MessageDialog(self,u'端口'+
+                    str(GlobalConfig['ServerPort'])+
+                    u'已被占用，WEB服务器无法启动！或许是因为litebook已经在运行？',
+                   u'出错了！',
+                   wx.OK | wx.ICON_ERROR
+                   )
+                dlg.ShowModal()
+                dlg.Destroy()
             # Start a thread with the server -- that thread will then start one
             # more thread for each request
             self.server_thread = threading.Thread(target=self.server.serve_forever)
             # Exit the server thread when the main thread terminates
             self.server_thread.setDaemon(True)
-            #GlobalConfig['RunWebserverAtStartup'] = True #always start web service for LTBNET
-            if GlobalConfig['RunWebserverAtStartup']:
-                try:
-                    self.server_thread.start()
-                    mbar=self.GetMenuBar()
-                    mbar.Check(705,True)
-                except:
-                    dlg = wx.MessageDialog(self, u'启动WEB服务器失败',
-                       u'出错了！',
-                       wx.OK | wx.ICON_ERROR
-                       )
-                    dlg.ShowModal()
-                    dlg.Destroy()
+            try:
+                self.server_thread.start()
+                mbar=self.GetMenuBar()
+                mbar.Check(705,True)
+            except:
+                splash_frame.Close()
+                dlg = wx.MessageDialog(self, u'启动WEB服务器失败',
+                   u'出错了！',
+                   wx.OK | wx.ICON_ERROR
+                   )
+                dlg.ShowModal()
+                dlg.Destroy()
         #print "starting mDNS"
         #start mDNS ifconfigured
         self.mDNS=None
@@ -2921,7 +2935,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
             self.DownloadManager = download_manager.DownloadManager(self,GlobalConfig['ShareRoot'])
             #create LTBNET search dialog
             self.lsd = ltbsearchdiag.LTBSearchDiag(self,self.DownloadManager.addTask,'http://'+kadp_ip+':50201/')
-            wx.CallLater(10000,self.chkPort,False)
+            #wx.CallLater(10000,self.chkPort,False)
 
         splash_frame.Close()
         #print "splash_frame clsoed"
@@ -9695,7 +9709,8 @@ class ThreadAddUPNPMapping(threading.Thread):
         try:
             r=myup.changePortMapping(ml,'add')
         except Exception as inst:
-            print inst
+            #print inst
+            r=False
             pass
         if r==False:
             evt=AlertMsgEvt(txt=u'UPNP端口映射设置失败！请手动设置宽带路由器并添加相应的端口映射。')
