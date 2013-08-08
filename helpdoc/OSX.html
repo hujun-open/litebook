@@ -2,22 +2,35 @@
 	
 <head>
 	<title>如何在OSX下运行</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf8">
-    <meta name="generator" content="HelpNDoc">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Personal Edition 3.9.1.648">
 	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
 	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
 	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
 	<!--[if lte IE 8]>
 		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
 	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
 	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<script type="text/javascript" src="js/hnd.js"></script>
-	<script type="text/javascript"><!--
-		var sTopicId = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
-		if (top.frames.length == 0)
-			top.location.href = "litebook.html?" + sTopicId
-		else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
-			top.FrameTOC.SelectTocItem(sTopicId);
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "litebook.html?" + sTopicUrl;
+			}
+			else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+			{
+				top.FrameTOC.SelectTocItem("OSX");
+			}
+		});
 	</script>
 </head>
 
@@ -38,18 +51,20 @@
 		</div>
 	<div id="topic_content">
 		
-<p class="rvps3"><span class="rvts8">LiteBook在MAC OSX下面只能以python源码形式运行,步骤如下：</span></p>
-<p class="rvps3"><span class="rvts8"></span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">(1)从官方网站( http://code.google.com/p/litebook-project/)的SVN中获取最新的源代码，或是在官方网站的下载页面下载源码版。</span></p>
-<p class="rvps3"><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">从svn中checkout源码的方法：svn checkout http://litebook-project.googlecode.com/svn/trunk/2.0-Dev/single litebook3</span></p>
-<p class="rvps3"><span class="rvts8"><br></span></p>
-<p class="rvps3"><span class="rvts8"></span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">(2).确认你的系统中安装有如下python环境：</span></p>
-<p class="rvps3"><span class="rvts8"></span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">- Python 2.7（不支持python 3.0）</span></p>
-<p class="rvps3"><span class="rvts8"></span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">- wxpython 2.8 unicode for python 2.7 (http://wxpython.org/download.php#stable)</span></p>
-<p class="rvps3"><span class="rvts8"></span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">注意：如果在安装时遇到”... is damaged and can’t be opened. You should eject the disk image."错误，请使用如下命令安装："sudo installer -pkg /Volumes/&lt;path-to-wxpython.pkg&gt; -target /"</span></p>
-<p class="rvps3"><span class="rvts8"></span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">- twisted (推荐采用mac port安装: sudo port install py-twisted)</span></p>
-<p class="rvps3"><span class="rvts8"></span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span></p>
-<p class="rvps3"><span class="rvts8"></span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">(3)在litebook的目录下运行“bash lb3_osx"</span></p>
-<p class="rvps2"><span class="rvts6">Created with the Personal Edition of HelpNDoc: </span><a class="rvts7" href="http://www.helpndoc.com">Easily create iPhone documentation</a></p>
+<p></p>
+<p class="rvps2"><span class="rvts6">LiteBook在MAC OSX下面只能以python源码形式运行,步骤如下：</span></p>
+<p class="rvps2"><span class="rvts6"></span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">(1)从官方网站( http://code.google.com/p/litebook-project/)的SVN中获取最新的源代码，或是在官方网站的下载页面下载源码版。</span></p>
+<p class="rvps2"><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">从svn中checkout源码的方法：svn checkout http://litebook-project.googlecode.com/svn/trunk/2.0-Dev/single litebook3</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6"></span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">(2).确认你的系统中安装有如下python环境：</span></p>
+<p class="rvps2"><span class="rvts6"></span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">- Python 2.7（不支持python 3.0）</span></p>
+<p class="rvps2"><span class="rvts6"></span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">- wxpython 2.8 unicode for python 2.7 (http://wxpython.org/download.php#stable)</span></p>
+<p class="rvps2"><span class="rvts6"></span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">注意：如果在安装时遇到”... is damaged and can’t be opened. You should eject the disk image."错误，请使用如下命令安装："sudo installer -pkg /Volumes/&lt;path-to-wxpython.pkg&gt; -target /"</span></p>
+<p class="rvps2"><span class="rvts6"></span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">- twisted (推荐采用mac port安装: sudo port install py-twisted)</span></p>
+<p class="rvps2"><span class="rvts6"></span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span></p>
+<p class="rvps2"><span class="rvts6"></span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">(3)在litebook的目录下运行“bash lb3_osx"</span></p>
+<p></p>
+<p class="rvps3"><span class="rvts8">Created with the Personal Edition of HelpNDoc: </span><a class="rvts9" href="http://www.helpndoc.com/create-epub-ebooks">Full-featured EPub generator</a></p>
 </div>
 	
 	<div id="topic_footer">

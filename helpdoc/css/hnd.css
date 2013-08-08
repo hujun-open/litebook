@@ -36,23 +36,23 @@ a.rvts5, span.rvts5 /* Jump 2 */
 }
 span.rvts6 /* Font Style */
 {
+}
+span.rvts7
+{
+ font-family: '宋体';
+}
+span.rvts8 /* Font Style */
+{
  font-family: 'Tahoma', 'Geneva', sans-serif;
  font-style: italic;
  color: #c0c0c0;
 }
-a.rvts7, span.rvts7 /* Font Style */
+a.rvts9, span.rvts9 /* Font Style */
 {
  font-family: 'Tahoma', 'Geneva', sans-serif;
  font-style: italic;
  color: #6666ff;
  text-decoration: underline;
-}
-span.rvts8 /* Font Style */
-{
-}
-span.rvts9
-{
- font-family: '宋体';
 }
 span.rvts10
 {
@@ -74,6 +74,9 @@ p,ul,ol /* Paragraph Style */
 }
 .rvps2 /* Paragraph Style */
 {
+}
+.rvps3 /* Paragraph Style */
+{
  text-align: center;
  border-color: #c0c0c0;
  border-style: solid;
@@ -82,9 +85,6 @@ p,ul,ol /* Paragraph Style */
  border-left: none;
  padding: 2px 0px 2px 0px;
  margin: 7px 0px 7px 0px;
-}
-.rvps3 /* Paragraph Style */
-{
 }
 .rvps4
 {

@@ -2,22 +2,35 @@
 	
 <head>
 	<title>在线搜索及下载</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf8">
-    <meta name="generator" content="HelpNDoc">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Personal Edition 3.9.1.648">
 	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
 	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
 	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
 	<!--[if lte IE 8]>
 		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
 	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
 	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<script type="text/javascript" src="js/hnd.js"></script>
-	<script type="text/javascript"><!--
-		var sTopicId = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
-		if (top.frames.length == 0)
-			top.location.href = "litebook.html?" + sTopicId
-		else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
-			top.FrameTOC.SelectTocItem(sTopicId);
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "litebook.html?" + sTopicUrl;
+			}
+			else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+			{
+				top.FrameTOC.SelectTocItem("8");
+			}
+		});
 	</script>
 </head>
 
@@ -42,51 +55,59 @@
 		</div>
 	<div id="topic_content">
 		
-<p class="rvps3"><span class="rvts8">litebook在线搜索和下载功能介绍</span></p>
-<p class="rvps3"><span class="rvts8"><br></span></p>
-<p class="rvps3"><span class="rvts8">litebook从ver1.70 beta起开始加入在线搜索和下载的功能，其原理就是利用HTTP协议直接获取小说网站的搜索结果页面和小说的目录页面，然后加以分析，提取出小说的内容，然后加以整合、过滤，最后是获得一个整合后的文本文件。 上述过程说的通俗一点就是litebook把如下的步骤自动化了：</span></p>
-<p class="rvps3"><span class="rvts8"><br></span></p>
+<p></p>
+<p class="rvps2"><span class="rvts6">litebook在线搜索和下载功能介绍</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6">litebook从ver1.70 beta起开始加入在线搜索和下载的功能，其原理就是利用HTTP协议直接获取小说网站的搜索结果页面和小说的目录页面，然后加以分析，提取出小说的内容，然后加以整合、过滤，最后是获得一个整合后的文本文件。 上述过程说的通俗一点就是litebook把如下的步骤自动化了：</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
 <ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
-<li class="rvps3"><span class="rvts8">访问某小说网站，并在其搜索框内输入关键字</span></li>
-<li class="rvps3"><span class="rvts8">在搜索结果页面点击某个小说的链接，转入小说的目录页</span></li>
-<li class="rvps3"><span class="rvts8">把这本小说所有的章节都下载下来，然后拼成一个文本文件</span></li>
-<li class="rvps3"><span class="rvts8"></span></li>
+<li class="rvps2"><span class="rvts6">访问某小说网站，并在其搜索框内输入关键字</span></li>
+<li class="rvps2"><span class="rvts6">在搜索结果页面点击某个小说的链接，转入小说的目录页</span></li>
+<li class="rvps2"><span class="rvts6">把这本小说所有的章节都下载下来，然后拼成一个文本文件</span></li>
+<li class="rvps2"><span class="rvts6"></span></li>
 </ul>
-<p class="rvps3"><span class="rvts8">此功能具备如下特点：</span></p>
-<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps2"><span class="rvts6">此功能具备如下特点：</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
 <ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
-<li class="rvps3"><span class="rvts8">从3.0开始支持订阅功能，能够检查网址的更新并下载更新的章节</span></li>
-<li class="rvps3"><span class="rvts8">每个小说网站的支持都是通过一个插件的形式来实现</span></li>
-<li class="rvps3"><span class="rvts8">插件可以直接用python编写，编写完之后把脚本文件拷贝到plugin子目录下即可生效</span></li>
-<li class="rvps3"><span class="rvts8">支持HTTP代理(需插件支持)</span></li>
-<li class="rvps3"><span class="rvts8">支持多线程下载(需插件支持)</span></li>
-<li class="rvps3"><span class="rvts8">支持同时多个任务下载</span></li>
-<li class="rvps3"><span class="rvts8">支持同时搜索所有的网站</span></li>
+<li class="rvps2"><span class="rvts6">从3.0开始支持订阅功能，能够检查网址的更新并下载更新的章节</span></li>
+<li class="rvps2"><span class="rvts6">从3.1开始支持边下载边看功能，并且增加WEB下载管理器</span></li>
+<li class="rvps2"><span class="rvts6">每个小说网站的支持都是通过一个插件的形式来实现</span></li>
+<li class="rvps2"><span class="rvts6">插件可以直接用python编写，编写完之后把脚本文件拷贝到plugin子目录下即可生效</span></li>
+<li class="rvps2"><span class="rvts6">支持HTTP代理(需插件支持)</span></li>
+<li class="rvps2"><span class="rvts6">支持多线程下载(需插件支持)</span></li>
+<li class="rvps2"><span class="rvts6">支持同时多个任务下载</span></li>
+<li class="rvps2"><span class="rvts6">支持同时搜索所有的网站</span></li>
 </ul>
-<p class="rvps3"><span class="rvts8"><br></span></p>
-<p class="rvps3"><span class="rvts8"><br></span></p>
-<p class="rvps3"><span class="rvts8">使用说明：</span></p>
-<p class="rvps3"><span class="rvts8"><br></span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6">使用说明：</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
 <ol style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
-<li value="1" class="rvps3"><span class="rvts8">首先在“文件”菜单中选择“搜索小说网站”，也可以使用快捷键 Alt+C</span></li>
-<li value="2" class="rvps3"><span class="rvts8">然后在弹出的对话框中选择要搜索的网站以及输入关键字</span></li>
-<li value="3" class="rvps3"><span class="rvts8">在搜索结果对话框中选择你要下载的小说，然后点击“下载”按钮</span></li>
-<li value="4" class="rvps3"><span class="rvts8">在下载过程中，你可以继续看别的小说，下载是在后台进行的，底部的状态栏中会显示当前进程</span></li>
-<li value="5" class="rvps3"><span class="rvts8">下载结束后，会有弹出对话框提醒（你也可以在选项中设置直接保存而不提醒），你有两个选择：</span></li>
+<li class="rvps2"><span class="rvts6">首先在“文件”菜单中选择“搜索小说网站”，也可以使用快捷键 Alt+C</span></li>
+<li class="rvps2"><span class="rvts6">然后在弹出的对话框中选择要搜索的网站以及输入关键字</span></li>
+<li class="rvps2"><span class="rvts6">在搜索结果对话框中选择你要下载的小说，然后点击“下载”按钮</span></li>
+<li class="rvps2"><span class="rvts6">在下载过程中，你可以继续看别的小说，下载是在后台进行的，底部的状态栏中会显示当前进程</span></li>
+</ol>
+<ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;"><ul style="text-indent: 0px; margin-left: 48px; list-style-position: outside;">
+<li class="rvps2"><span class="rvts6">注：从3.1开始下载状态在WEB下载管理器中查看</span></li>
+</ul></ul>
+<ol style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
+<li class="rvps2"><span class="rvts6">下载结束后，会有弹出对话框提醒（你也可以在选项中设置直接保存而不提醒），你有两个选择：</span></li>
 <ol style="text-indent: 0px; margin-left: 48px; list-style-position: outside;">
-<li value="1" class="rvps5" style="margin-left: 0"><span class="rvts8">直接观看</span></li>
-<li value="2" class="rvps5" style="margin-left: 0"><span class="rvts8">另存为文件后打开。你可以在加入订阅上打勾把这本书加入订阅列表</span></li>
+<li class="rvps5" style="margin-left: 0"><span class="rvts6">直接观看</span></li>
+<li class="rvps5" style="margin-left: 0"><span class="rvts6">另存为文件后打开。你可以在加入订阅上打勾把这本书加入订阅列表</span></li>
 </ol>
-<li value="6" class="rvps3"><span class="rvts8">关于本功能的设置，请参见选项对话框中的下载设置页</span></li>
+<li class="rvps2"><span class="rvts6">关于本功能的设置，请参见选项对话框中的下载设置页</span></li>
 </ol>
-<p class="rvps3"><span class="rvts8"><br></span></p>
-<p class="rvps3"><span class="rvts8">订阅使用说明：</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6">订阅使用说明：</span></p>
 <ul style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
-<li class="rvps3"><span class="rvts8">“文件”菜单里选择“管理订阅”打开订阅管理对话框，其中列出当前所有订阅。</span></li>
-<li class="rvps3"><span class="rvts8">在列表中选中某项订阅后，点击“更新”按钮更新订阅，更新的章节会自动添加本地的小说中。</span></li>
+<li class="rvps2"><span class="rvts6">“文件”菜单里选择“管理订阅”打开订阅管理对话框，其中列出当前所有订阅。</span></li>
+<li class="rvps2"><span class="rvts6">在列表中选中某项订阅后，点击“更新”按钮更新订阅，更新的章节会自动添加本地的小说中。</span></li>
 </ul>
-<p class="rvps3"><span class="rvts8"><br></span></p>
-<p class="rvps2"><span class="rvts6">Created with the Personal Edition of HelpNDoc: </span><a class="rvts7" href="http://www.helpndoc.com">Create iPhone web-based documentation</a></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p></p>
+<p class="rvps3"><span class="rvts8">Created with the Personal Edition of HelpNDoc: </span><a class="rvts9" href="http://www.helpndoc.com/feature-tour">Easily create HTML Help documents</a></p>
 </div>
 	
 	<div id="topic_footer">

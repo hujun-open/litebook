@@ -2,22 +2,35 @@
 	
 <head>
 	<title>自动生成章节列表</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf8">
-    <meta name="generator" content="HelpNDoc">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Personal Edition 3.9.1.648">
 	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
 	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
 	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
 	<!--[if lte IE 8]>
 		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
 	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
 	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<script type="text/javascript" src="js/hnd.js"></script>
-	<script type="text/javascript"><!--
-		var sTopicId = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
-		if (top.frames.length == 0)
-			top.location.href = "litebook.html?" + sTopicId
-		else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
-			top.FrameTOC.SelectTocItem(sTopicId);
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "litebook.html?" + sTopicUrl;
+			}
+			else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+			{
+				top.FrameTOC.SelectTocItem("88");
+			}
+		});
 	</script>
 </head>
 
@@ -42,16 +55,18 @@
 		</div>
 	<div id="topic_content">
 		
-<p class="rvps3"><span class="rvts8">litebook从ver2.2起加入自动生成章节列表功能，有两种方式显示：</span></p>
+<p></p>
+<p class="rvps2"><span class="rvts6">litebook从ver2.2起加入自动生成章节列表功能，有两种方式显示：</span></p>
 <ol style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
-<li value="1" class="rvps3"><span class="rvts8">弹出窗口，缺省快捷键Ctrl+U，进一步方便读者在文本内导航，如下图所示：</span></li>
+<li class="rvps2"><span class="rvts6">弹出窗口，缺省快捷键Ctrl+U，进一步方便读者在文本内导航，如下图所示：</span></li>
 </ol>
-<p class="rvps3"><img border="0" alt hspace="1" vspace="1" src="lib/litebook_catalog_1.png"></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/litebook_catalog_1.png"/></p>
 <ol style="text-indent: 0px; margin-left: 24px; list-style-position: outside;">
-<li value="2" class="rvps3"><span class="rvts8">章节侧边栏，缺省快捷键Alt+J，如下图所示：</span></li>
+<li class="rvps2"><span class="rvts6">章节侧边栏，缺省快捷键Alt+J，如下图所示：</span></li>
 </ol>
-<p class="rvps3"><img border="0" alt hspace="1" vspace="1" src="lib/litebook_catalog_2_big.png"></p>
-<p class="rvps2"><span class="rvts6">Created with the Personal Edition of HelpNDoc: </span><a class="rvts7" href="http://www.helpndoc.com">Free PDF documentation generator</a></p>
+<p class="rvps2"><img alt="" style="padding : 1px;" src="lib/litebook_catalog_2_big.png"/></p>
+<p></p>
+<p class="rvps3"><span class="rvts8">Created with the Personal Edition of HelpNDoc: </span><a class="rvts9" href="http://www.helpndoc.com/feature-tour/create-ebooks-for-amazon-kindle">Write eBooks for the Kindle</a></p>
 </div>
 	
 	<div id="topic_footer">

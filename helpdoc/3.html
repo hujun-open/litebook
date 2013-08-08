@@ -2,22 +2,35 @@
 	
 <head>
 	<title>常用快捷键</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf8">
-    <meta name="generator" content="HelpNDoc">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="HelpNDoc Personal Edition 3.9.1.648">
 	<link type="text/css" rel="stylesheet" media="all" href="css/reset.css" />
 	<link type="text/css" rel="stylesheet" media="all" href="css/base.css" />
 	<link type="text/css" rel="stylesheet" media="all" href="css/hnd.css" />
 	<!--[if lte IE 8]>
 		<link type="text/css" rel="stylesheet" media="all" href="css/ielte8.css" />
 	<![endif]-->
+	<style type="text/css">
+		#topic_header
+		{
+			background-color: #EFEFEF;
+		}
+	</style>
 	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<script type="text/javascript" src="js/hnd.js"></script>
-	<script type="text/javascript"><!--
-		var sTopicId = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
-		if (top.frames.length == 0)
-			top.location.href = "litebook.html?" + sTopicId
-		else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
-			top.FrameTOC.SelectTocItem(sTopicId);
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			if (top.frames.length == 0)
+			{
+				var sTopicUrl = top.location.href.substring(top.location.href.lastIndexOf("/") + 1, top.location.href.length);
+				top.location.href = "litebook.html?" + sTopicUrl;
+			}
+			else if (top && top.FrameTOC && top.FrameTOC.SelectTocItem)
+			{
+				top.FrameTOC.SelectTocItem("3");
+			}
+		});
 	</script>
 </head>
 
@@ -38,30 +51,32 @@
 		</div>
 	<div id="topic_content">
 		
-<p class="rvps3"><span class="rvts8">以下是litebook2常用功能快捷键，更多快捷键设置请看“功能介绍”章中的“按键控制”。</span></p>
-<p class="rvps3"><span class="rvts8"><br></span></p>
-<p class="rvps3"><span class="rvts8">向上翻行</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">方向上键</span></p>
-<p class="rvps3"><span class="rvts8">向下翻行</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">方向下键</span></p>
-<p class="rvps3"><span class="rvts8">向上翻页</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">方向左键</span></p>
-<p class="rvps3"><span class="rvts8">向上翻页</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">PAGEUP</span></p>
-<p class="rvps3"><span class="rvts8">向下翻页</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">PAGEDOWN</span></p>
-<p class="rvps3"><span class="rvts8">向下翻页</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">空格键</span></p>
-<p class="rvps3"><span class="rvts8">向下翻页</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">方向右键</span></p>
-<p class="rvps3"><span class="rvts8">向上翻半页</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">，</span></p>
-<p class="rvps3"><span class="rvts8">向下翻半页</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">。</span></p>
-<p class="rvps3"><span class="rvts8">后退10%</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">[</span></p>
-<p class="rvps3"><span class="rvts8">前进10%</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">]</span></p>
-<p class="rvps3"><span class="rvts8">后退1%</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">9</span></p>
-<p class="rvps3"><span class="rvts8">前进1%</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">0</span></p>
-<p class="rvps3"><span class="rvts8">跳到首页</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">HOME</span></p>
-<p class="rvps3"><span class="rvts8">跳到结尾</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">END</span></p>
-<p class="rvps3"><span class="rvts8">最小化</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">ESC</span></p>
-<p class="rvps3"><span class="rvts8">显示进度条</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">Z</span></p>
-<p class="rvps3"><span class="rvts8">上一个文件</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">CTRL+[</span></p>
-<p class="rvps3"><span class="rvts8">下一个文件</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">CTRL+]</span></p>
-<p class="rvps3"><span class="rvts8">增大字体</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">=</span></p>
-<p class="rvps3"><span class="rvts8">减小字体</span><span class="rvts8"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts8">-</span></p>
-<p class="rvps2"><span class="rvts6">Created with the Personal Edition of HelpNDoc: </span><a class="rvts7" href="http://www.helpndoc.com">Create iPhone web-based documentation</a></p>
+<p></p>
+<p class="rvps2"><span class="rvts6">以下是litebook2常用功能快捷键，更多快捷键设置请看“功能介绍”章中的“按键控制”。</span></p>
+<p class="rvps2"><span class="rvts6"><br/></span></p>
+<p class="rvps2"><span class="rvts6">向上翻行</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">方向上键</span></p>
+<p class="rvps2"><span class="rvts6">向下翻行</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">方向下键</span></p>
+<p class="rvps2"><span class="rvts6">向上翻页</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">方向左键</span></p>
+<p class="rvps2"><span class="rvts6">向上翻页</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">PAGEUP</span></p>
+<p class="rvps2"><span class="rvts6">向下翻页</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">PAGEDOWN</span></p>
+<p class="rvps2"><span class="rvts6">向下翻页</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">空格键</span></p>
+<p class="rvps2"><span class="rvts6">向下翻页</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">方向右键</span></p>
+<p class="rvps2"><span class="rvts6">向上翻半页</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">，</span></p>
+<p class="rvps2"><span class="rvts6">向下翻半页</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">。</span></p>
+<p class="rvps2"><span class="rvts6">后退10%</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">[</span></p>
+<p class="rvps2"><span class="rvts6">前进10%</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">]</span></p>
+<p class="rvps2"><span class="rvts6">后退1%</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">9</span></p>
+<p class="rvps2"><span class="rvts6">前进1%</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">0</span></p>
+<p class="rvps2"><span class="rvts6">跳到首页</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">HOME</span></p>
+<p class="rvps2"><span class="rvts6">跳到结尾</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">END</span></p>
+<p class="rvps2"><span class="rvts6">最小化</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">ESC</span></p>
+<p class="rvps2"><span class="rvts6">显示进度条</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">Z</span></p>
+<p class="rvps2"><span class="rvts6">上一个文件</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">CTRL+[</span></p>
+<p class="rvps2"><span class="rvts6">下一个文件</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">CTRL+]</span></p>
+<p class="rvps2"><span class="rvts6">增大字体</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">=</span></p>
+<p class="rvps2"><span class="rvts6">减小字体</span><span class="rvts6"> &nbsp; &nbsp; &nbsp; &nbsp;</span><span class="rvts6">-</span></p>
+<p></p>
+<p class="rvps3"><span class="rvts8">Created with the Personal Edition of HelpNDoc: </span><a class="rvts9" href="http://www.helpndoc.com/feature-tour/iphone-website-generation">Free iPhone documentation generator</a></p>
 </div>
 	
 	<div id="topic_footer">
