@@ -10,7 +10,7 @@ def myignore(src,name):
 
 sys.argv.append('py2exe')
 
-setup(windows=[{'script':'litebook.py',"icon_resources": [(1, "litebook.ico")]}],
+setup(windows=[{'script':'litebook.py',"icon_resources": [(1, "litebook.ico")]},],
 data_files=[('templates', glob.glob('templates/*.*')),
             ('UnRAR2', glob.glob('UnRAR2/*.*')),
             ('icon', glob.glob('icon/*.*')),

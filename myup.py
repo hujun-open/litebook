@@ -188,10 +188,11 @@ def changePortMapping(mapping_list,method='add'):
     up_disc='M-SEARCH * HTTP/1.1\r\nHOST:239.255.255.250:1900\r\nST:upnp:rootdevice\r\nMX:2\r\nMAN:"ssdp:discover"\r\n\r\n'
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
-    sock.bind(('',1910))
+    sock.bind(('',19110))
     sock.sendto(up_disc, ("239.255.255.250", 1900))
     sock.settimeout(10.0)
     data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
+    sock.close()
     internal_ip = getDRIntIP(addr[0])
 ##    print "internal_ip is ",internal_ip
 ##    print "received message:", data

@@ -117,6 +117,8 @@ class LiteView(wx.ScrolledWindow):
         # Initialize the mouse dragging value
         self.LastMousePos=None
         self.FirstMousePos=None
+        self.pos_list=[]
+        self.MaxPosEntry=20
 
         #绑定事件处理
 ##        self.Bind(wx.EVT_SCROLLWIN,self.OnScroll)
@@ -129,6 +131,17 @@ class LiteView(wx.ScrolledWindow):
         self.Bind(wx.EVT_LEFT_DOWN,self.MouseClick)
 
         #self.Bind(wx.EVT_RIGHT_UP,self.OnMouseDrag)
+
+    def getPosList(self):
+        return self.pos_list
+
+    def updatePosList(self,newpos):
+        if len(self.pos_list)>0:
+            if abs(self.pos_list[-1:][0]-newpos)<=50:return
+
+        if len(self.pos_list)>=self.MaxPosEntry:
+            self.pos_list.pop(0)
+        self.pos_list.append(newpos)
 
     def MouseClick(self,evt):
         self.SetFocus()
@@ -844,6 +857,7 @@ class LiteView(wx.ScrolledWindow):
     def ScrollPercent(self,percent,direction=1):
         """按百分比翻页"""
         if not isinstance(percent,int) or percent<=0 or percent>100:return
+        self.updatePosList(self.start_pos)
         delta=(self.ValueCharCount*percent)/100
         if direction==1:
             newpos=self.current_pos+delta
@@ -889,6 +903,7 @@ class LiteView(wx.ScrolledWindow):
 
     def ScrollTop(self):
         """显示第一页"""
+        self.updatePosList(self.start_pos)
         self.current_pos=0
         self.start_pos=0
         self.ShowPos(1)
@@ -896,6 +911,7 @@ class LiteView(wx.ScrolledWindow):
 
     def ScrollBottom(self):
         """显示最后一页"""
+        self.updatePosList(self.start_pos)
         self.start_pos=self.ValueCharCount
         self.ShowPos(-1)
         self.Refresh()
@@ -998,6 +1014,8 @@ class LiteView(wx.ScrolledWindow):
         self.start_pos=0
         self.Refresh()
         self.ReDraw()
+        self.pos_list=[]
+
 
     def AppendValue(self,txt):
         """
@@ -1010,6 +1028,7 @@ class LiteView(wx.ScrolledWindow):
         self.ReDraw()
 
     def JumpTo(self,pos):
+        self.updatePosList(self.start_pos)
         self.current_pos=pos
         self.start_pos=0
         self.ShowPos(1)
@@ -1202,6 +1221,7 @@ class LiteView(wx.ScrolledWindow):
 
 
     def ShowPosition(self,pos):
+        self.updatePosList(self.start_pos)
         self.start_pos=pos
         self.ShowPos()
 

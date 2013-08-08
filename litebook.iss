@@ -7,8 +7,8 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{C271CABE-D1DE-46B3-A92B-2CFD5DE732D5}
 AppName=LiteBook v3
-AppVerName=LiteBook v3.0
-OutputBaseFilename=LiteBook_v3.0_Win_setup
+AppVerName=LiteBook v3.1
+OutputBaseFilename=LiteBook_v3.1_Win_setup
 AppPublisher=Hu Jun
 AppPublisherURL=http://sites.google.com/site/litebooksite/
 AppSupportURL=http://sites.google.com/site/litebooksite/
@@ -20,40 +20,41 @@ Compression=lzma
 SolidCompression=yes
 
 [Languages]
-Name: "Chinese"; MessagesFile: "compiler:ChineseSimp-12-5.1.11.isl"
+Name: "Chinese"; MessagesFile: "ChineseSimplified.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\litebook.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\python27.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\unrar.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\mainlist.txt"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "D:\hujun\litebook\tobuild\svn3\single\dist\l2_splash.gif"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\w9xpopen.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\litebook.exe.manifest"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\litebook.ico"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "D:\hujun\litebook\tobuild\svn3\single\dist\LiteBook_Readme.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\defaultconfig.ini"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "D:\hujun\litebook\tobuild\svn3\single\dist\LiteBook_WhatsNew.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\py.dat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\bh.dat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\icon\*"; DestDir: "{app}\icon"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\kadp\*"; DestDir: "{app}\kadp"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\jieba\*"; DestDir: "{app}\jieba"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\UnRAR2\*"; DestDir: "{app}\UnRAR2"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\helpdoc\*"; DestDir: "{app}\helpdoc"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\background\*"; DestDir: "{app}\background"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\plugin\*.py"; DestDir: "{app}\plugin"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\hujun\litebook\tobuild\svn3\single\dist\templates\*"; DestDir: "{app}\templates"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\litebook.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\python27.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\unrar.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\mainlist.txt"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\l2_splash.gif"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\w9xpopen.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\litebook.exe.manifest"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\litebook.ico"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\LiteBook_Readme.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\defaultconfig.ini"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\LiteBook_WhatsNew.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\py.dat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\bh.dat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\icon\*"; DestDir: "{app}\icon"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\kadp\*"; DestDir: "{app}\kadp"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\jieba\*"; DestDir: "{app}\jieba"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\UnRAR2\*"; DestDir: "{app}\UnRAR2"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\helpdoc\*"; DestDir: "{app}\helpdoc"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\background\*"; DestDir: "{app}\background"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\plugin\*.py"; DestDir: "{app}\plugin"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "E:\hujun\litebook\tobuild\svn3\s2\litebook\dist\templates\*"; DestDir: "{app}\templates"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "vcredist_x86.exe"; DestDir: "{tmp}"; Check: NeedInstallVC9SP1
 
 [Icons]
-Name: "{group}\LiteBook"; Filename: "{app}\litebook.exe"
-Name: "{group}\ª÷∏¥µΩ»± °≈‰÷√∆Ù∂Ø"; Filename: "{app}\litebook.exe"; IconFilename: "{app}\litebook.exe"; Parameters: " -reset"
+Name: "{group}\LiteBook"; Filename: "{app}\litebook.exe";
+Name: "{group}\LiteBookÕÍ»´∞Ê"; Filename: "{app}\litebook.exe"; IconFilename: "{app}\litebook.exe"; Parameters: " -full";
+Name: "{group}\ª÷∏¥µΩ»± °≈‰÷√∆Ù∂Ø"; Filename: "{app}\litebook.exe"; IconFilename: "{app}\litebook.exe"; Parameters: " -reset";
 Name: "{group}\{cm:UninstallProgram,LiteBook}"; Filename: "{uninstallexe}";
 Name: "{commondesktop}\LiteBook"; Filename: "{app}\litebook.exe"; Tasks: desktopicon
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\LiteBook"; Filename: "{app}\litebook.exe"; Tasks: quicklaunchicon

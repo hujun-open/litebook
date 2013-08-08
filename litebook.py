@@ -7,20 +7,32 @@
 #
 #
 #
+import sys
+FullVersion=False
+if len(sys.argv)>1:
+    if sys.argv[1]=='-full':
+        FullVersion=True
+
+if FullVersion:
+    import download_manager
+    import ltbsearchdiag
+    import xmlrpclib
+    import myup
+    import kpub
+    import Zeroconf
+    import socket
+    import SocketServer
+    import posixpath
+    import BaseHTTPServer
+    import urllib
+
 
 import web_download_manager
-import download_manager
-import ltbsearchdiag
-import signal
-import xmlrpclib
-import myup
 import fj
 import traceback
 import platform
-import sys
-import kpub
-#from lxml import etree
-#import jft
+
+
 MYOS = platform.system()
 osarch=platform.architecture()
 if osarch[1]=='ELF' and MYOS == 'Linux':
@@ -43,15 +55,13 @@ elif MYOS == 'Darwin':
 elif MYOS == 'Windows':
     import wmi
     import win32api
-import Zeroconf
-import socket
+
 try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
-import SocketServer
-import posixpath
-import BaseHTTPServer
+
+
 import ez_epub
 import gcepub
 import ComboDialog
@@ -61,7 +71,6 @@ import keygrid
 
 import imp
 import urllib2
-import HTMLParser
 import glob
 import math
 import htmlentitydefs
@@ -94,7 +103,6 @@ if MYOS == 'Windows':
 import subprocess
 import thread
 import hashlib
-import urllib
 import threading
 
 
@@ -2428,6 +2436,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
     u'下载管理器':'self.Menu114(None)',
     u'管理订阅':'self.Menu115(None)',
     u'WEB下载管理器':'self.Menu116(None)',
+    u'跳转历史':'self.Menu513(None)',
     }
 
     def __init__(self,parent,openfile=None):
@@ -2547,6 +2556,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         wxglade_tmp_menu.Append(505, u"自动翻页"+KeyMenuList[u'自动翻页'], u"是否自动翻页", wx.ITEM_CHECK)
         wxglade_tmp_menu.Append(506, u"显示进度条"+KeyMenuList[u'显示进度条'], u"显示进度条", wx.ITEM_NORMAL)
         wxglade_tmp_menu.Append(509, u"显示章节"+KeyMenuList[u'显示目录'], u"显示章节", wx.ITEM_NORMAL)
+        wxglade_tmp_menu.Append(513, u"跳转历史"+KeyMenuList[u'跳转历史'], u"跳转历史", wx.ITEM_NORMAL)
         if GlobalConfig['HideToolbar']:
             wxglade_tmp_menu.Check(501,True)
 
@@ -2626,6 +2636,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         self.Bind(wx.EVT_MENU, self.Menu510, id=510)
         self.Bind(wx.EVT_MENU, self.Menu511, id=511)
         self.Bind(wx.EVT_MENU, self.Menu512, id=512)
+        self.Bind(wx.EVT_MENU, self.Menu513, id=513)
         self.Bind(wx.EVT_MENU, self.Menu601, id=601)
         self.Bind(wx.EVT_MENU, self.Menu602, id=602)
         self.Bind(wx.EVT_MENU, self.Menu603, id=603)
@@ -2809,133 +2820,121 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
             #self.text_ctrl_1.HideNativeCaret()
         self.__set_properties()
         self.__do_layout()
-        #add UPNP mapping via thread, otherwise it will block, and it takes long time
-        self.upnp_t=None
-        if GlobalConfig['RunUPNPAtStartup']:
-            self.upnp_t = ThreadAddUPNPMapping(self)
-            self.upnp_t.start()
-        #starting web server if configured
-##        self.server=None
-##        try:
-##            self.server = ThreadedLBServer(('', GlobalConfig['ServerPort']), LBHTTPRequestHandler)
-##        except socket.error:
-##            splash_frame.Close()
-##            dlg = wx.MessageDialog(self,u'端口'+
-##                str(GlobalConfig['ServerPort'])+
-##                u'已被占用，WEB服务器无法启动！或许是因为litebook已经在运行？',
-##               u'出错了！',
-##               wx.OK | wx.ICON_ERROR
-##               )
-##            dlg.ShowModal()
-##            dlg.Destroy()
-##        else:
-        self.server=None
-        if GlobalConfig['RunWebserverAtStartup']:
-
-            try:
-                self.server = ThreadedLBServer(('', GlobalConfig['ServerPort']), LBHTTPRequestHandler)
-            except socket.error:
-                splash_frame.Close()
-                dlg = wx.MessageDialog(self,u'端口'+
-                    str(GlobalConfig['ServerPort'])+
-                    u'已被占用，WEB服务器无法启动！或许是因为litebook已经在运行？',
-                   u'出错了！',
-                   wx.OK | wx.ICON_ERROR
-                   )
-                dlg.ShowModal()
-                dlg.Destroy()
-            # Start a thread with the server -- that thread will then start one
-            # more thread for each request
-            self.server_thread = threading.Thread(target=self.server.serve_forever)
-            # Exit the server thread when the main thread terminates
-            self.server_thread.setDaemon(True)
-            try:
-                self.server_thread.start()
-                mbar=self.GetMenuBar()
-                mbar.Check(705,True)
-            except:
-                splash_frame.Close()
-                dlg = wx.MessageDialog(self, u'启动WEB服务器失败',
-                   u'出错了！',
-                   wx.OK | wx.ICON_ERROR
-                   )
-                dlg.ShowModal()
-                dlg.Destroy()
-        #print "starting mDNS"
-        #start mDNS ifconfigured
-        self.mDNS=None
-        if GlobalConfig['RunWebserverAtStartup']:
-            if MYOS == 'Linux':
-                host_ip=GetMDNSIP()
-            elif MYOS == 'Darwin':
-                host_ip=GetMDNSIP_OSX()
-            else:
-                host_ip=GetMDNSIP_Win()
-            if host_ip:
-                self.mDNS=Zeroconf.Zeroconf(host_ip)
-                self.mDNS_svc=Zeroconf.ServiceInfo("_opds._tcp.local.", "litebook_shared._opds._tcp.local.", socket.inet_aton(host_ip), GlobalConfig['ServerPort'], 0, 0, {'version':'0.10'})
-                self.mDNS.registerService(self.mDNS_svc)
-
         self.WebDownloadManager=web_download_manager.WebDownloadManager(self)
-        #start KADP
-        self.KPUB_thread=None
-        self.DownloadManager=None
-        self.lsd=None
-        if GlobalConfig['EnableLTBNET']:
-            kadp_ip='127.0.0.1'
-            if MYOS == 'Windows':
-                kadp_exe = cur_file_dir()+"\kadp\KADP.exe"
-                cmd = [
-                    kadp_exe,
-                    '-product',
-                    str(GlobalConfig['LTBNETPort']),
-                    GlobalConfig['LTBNETID'],
-                    '0',
-                    '1',
-                ]
-            else:
-                cmd = [
-                    'python',
-                    cur_file_dir()+"/KADP.py",
-                    '-product',
-                    str(GlobalConfig['LTBNETPort']),
-                    GlobalConfig['LTBNETID'],
-                    '0',
-                    '1',
-                ]
-                #following is the test code
-    ##            kadp_ip='218.21.123.99'
-    ##            cmd = [
-    ##                'python',
-    ##                cur_file_dir()+"/KADP.py",
-    ##                '-server',
-    ##                kadp_ip,
-    ##                '50200',
-    ##                '11110111100000009999',
-    ##                '/root/kconf-21',
-    ##                '0',
-    ##            ]
-            GlobalConfig['kadp_ctrl'] = xmlrpclib.Server('http://'+kadp_ip+':50201/')
-            if hasattr(sys.stderr, 'fileno'):
-                childstderr = sys.stderr
-            elif hasattr(sys.stderr, '_file') and hasattr(sys.stderr._file, 'fileno'):
-                childstderr = sys.stderr._file
-            else:
-                # Give up and point child stderr at nul
-                childStderrPath = 'nul'
-                childstderr = file(childStderrPath, 'a')
-            #childstderr = file('nul', 'a')
-            if MYOS == 'Windows':
-                self.KADP_Process = subprocess.Popen(cmd, stdin=childstderr,stdout=childstderr,stderr=childstderr,creationflags = win32process.CREATE_NO_WINDOW)
-            else:
-                self.KADP_Process = subprocess.Popen(cmd)
-            self.KPUB_thread = kpub.KPUB(GlobalConfig['ShareRoot'],rloc_base_url=u'http://SELF:'+str(GlobalConfig['ServerPort'])+'/')
-            self.KPUB_thread.start()
-            #create download manager
-            self.DownloadManager = download_manager.DownloadManager(self,GlobalConfig['ShareRoot'])
-            #create LTBNET search dialog
-            self.lsd = ltbsearchdiag.LTBSearchDiag(self,self.DownloadManager.addTask,'http://'+kadp_ip+':50201/')
-            #wx.CallLater(10000,self.chkPort,False)
+        if FullVersion:
+            #add UPNP mapping via thread, otherwise it will block, and it takes long time
+            self.upnp_t=None
+            if GlobalConfig['RunUPNPAtStartup']:
+                self.upnp_t = ThreadAddUPNPMapping(self)
+                self.upnp_t.start()
+            #starting web server if configured
+            self.server=None
+            if GlobalConfig['RunWebserverAtStartup']:
+
+                try:
+                    self.server = ThreadedLBServer(('', GlobalConfig['ServerPort']), LBHTTPRequestHandler)
+                except socket.error:
+                    splash_frame.Close()
+                    dlg = wx.MessageDialog(self,u'端口'+
+                        str(GlobalConfig['ServerPort'])+
+                        u'已被占用，WEB服务器无法启动！或许是因为litebook已经在运行？',
+                       u'出错了！',
+                       wx.OK | wx.ICON_ERROR
+                       )
+                    dlg.ShowModal()
+                    dlg.Destroy()
+                # Start a thread with the server -- that thread will then start one
+                # more thread for each request
+                self.server_thread = threading.Thread(target=self.server.serve_forever)
+                # Exit the server thread when the main thread terminates
+                self.server_thread.setDaemon(True)
+                try:
+                    self.server_thread.start()
+                    mbar=self.GetMenuBar()
+                    mbar.Check(705,True)
+                except:
+                    splash_frame.Close()
+                    dlg = wx.MessageDialog(self, u'启动WEB服务器失败',
+                       u'出错了！',
+                       wx.OK | wx.ICON_ERROR
+                       )
+                    dlg.ShowModal()
+                    dlg.Destroy()
+            #print "starting mDNS"
+            #start mDNS ifconfigured
+            self.mDNS=None
+            if GlobalConfig['RunWebserverAtStartup']:
+                if MYOS == 'Linux':
+                    host_ip=GetMDNSIP()
+                elif MYOS == 'Darwin':
+                    host_ip=GetMDNSIP_OSX()
+                else:
+                    host_ip=GetMDNSIP_Win()
+                if host_ip:
+                    self.mDNS=Zeroconf.Zeroconf(host_ip)
+                    self.mDNS_svc=Zeroconf.ServiceInfo("_opds._tcp.local.", "litebook_shared._opds._tcp.local.", socket.inet_aton(host_ip), GlobalConfig['ServerPort'], 0, 0, {'version':'0.10'})
+                    self.mDNS.registerService(self.mDNS_svc)
+
+
+            #start KADP
+            self.KPUB_thread=None
+            self.DownloadManager=None
+            self.lsd=None
+            if GlobalConfig['EnableLTBNET']:
+                kadp_ip='127.0.0.1'
+                if MYOS == 'Windows':
+                    kadp_exe = cur_file_dir()+"\kadp\KADP.exe"
+                    cmd = [
+                        kadp_exe,
+                        '-product',
+                        str(GlobalConfig['LTBNETPort']),
+                        GlobalConfig['LTBNETID'],
+                        '0',
+                        '1',
+                    ]
+                else:
+                    cmd = [
+                        'python',
+                        cur_file_dir()+"/KADP.py",
+                        '-product',
+                        str(GlobalConfig['LTBNETPort']),
+                        GlobalConfig['LTBNETID'],
+                        '0',
+                        '1',
+                    ]
+                    #following is the test code
+        ##            kadp_ip='218.21.123.99'
+        ##            cmd = [
+        ##                'python',
+        ##                cur_file_dir()+"/KADP.py",
+        ##                '-server',
+        ##                kadp_ip,
+        ##                '50200',
+        ##                '11110111100000009999',
+        ##                '/root/kconf-21',
+        ##                '0',
+        ##            ]
+                GlobalConfig['kadp_ctrl'] = xmlrpclib.Server('http://'+kadp_ip+':50201/')
+                if hasattr(sys.stderr, 'fileno'):
+                    childstderr = sys.stderr
+                elif hasattr(sys.stderr, '_file') and hasattr(sys.stderr._file, 'fileno'):
+                    childstderr = sys.stderr._file
+                else:
+                    # Give up and point child stderr at nul
+                    childStderrPath = 'nul'
+                    childstderr = file(childStderrPath, 'a')
+                #childstderr = file('nul', 'a')
+                if MYOS == 'Windows':
+                    self.KADP_Process = subprocess.Popen(cmd, stdin=childstderr,stdout=childstderr,stderr=childstderr,creationflags = win32process.CREATE_NO_WINDOW)
+                else:
+                    self.KADP_Process = subprocess.Popen(cmd)
+                self.KPUB_thread = kpub.KPUB(GlobalConfig['ShareRoot'],rloc_base_url=u'http://SELF:'+str(GlobalConfig['ServerPort'])+'/')
+                self.KPUB_thread.start()
+                #create download manager
+                self.DownloadManager = download_manager.DownloadManager(self,GlobalConfig['ShareRoot'])
+                #create LTBNET search dialog
+                self.lsd = ltbsearchdiag.LTBSearchDiag(self,self.DownloadManager.addTask,'http://'+kadp_ip+':50201/')
+                #wx.CallLater(10000,self.chkPort,False)
 
         splash_frame.Close()
         #print "splash_frame clsoed"
@@ -2949,7 +2948,13 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
 
         self.websubscrdlg=None
 
-
+        if FullVersion==False:
+            mbar=self.GetMenuBar()
+            mbar.Enable(113,False)
+            mbar.Enable(114,False)
+            mbar.Enable(705,False)
+            mbar.Enable(706,False)
+            mbar.Enable(707,False)
 
 
 
@@ -3552,6 +3557,25 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         global GlobalConfig
         GlobalConfig['ToolSize']+=1
         self.ResetTool((GlobalConfig['ToolSize'],GlobalConfig['ToolSize']))
+
+
+    def Menu513(self,evt):
+        values=self.text_ctrl_1.GetValue()
+        pos_list=self.text_ctrl_1.getPosList()
+        values_list=[]
+        for pos in pos_list:
+            values_list.append(u'字号:'+unicode(pos)+u" - "+values[pos:pos+20])
+        dlg = wx.SingleChoiceDialog(
+                self, u'跳转到之前阅读位置', u'选择位置',
+                choices=values_list,
+                style=wx.CHOICEDLG_STYLE
+                )
+
+        if dlg.ShowModal() == wx.ID_OK:
+            i=dlg.GetSelection()
+            pos=pos_list[i]
+            self.text_ctrl_1.JumpTo(pos)
+        dlg.Destroy()
 
 
     def Menu503(self, event):
@@ -4552,7 +4576,8 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         self.clk_thread.stop()
         self.display_pos_thread.stop()
         self.auto_count_thread.stop()
-        if self.KPUB_thread != None: self.KPUB_thread.stop()
+        if FullVersion:
+            if self.KPUB_thread != None: self.KPUB_thread.stop()
         time.sleep(1)
         GlobalConfig['CurFontData']=self.text_ctrl_1.GetFont()
         GlobalConfig['CurFColor']=self.text_ctrl_1.GetFColor()
@@ -4567,32 +4592,33 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
             writeConfigFile(GlobalConfig['LastPos'])
         else:
             writeConfigFile(self.GetCurrentPos())
-        mbar=self.GetMenuBar()
-        if mbar.IsChecked(705):
-            self.server.shutdown()
-        if self.mDNS<>None:
-            self.mDNS.close()
+
         #stop KADP
-##        print "start to stop KADP"
-        if 'kadp_ctrl' in GlobalConfig:
-            kadp_ctrl = GlobalConfig['kadp_ctrl']
-    ##        kadp_ctrl.preparestop(False)
-    ##        print "start to kill KADP"
-    ##        self.KADP_Process.kill()
-    ##        print "finish stop KADP"
+        if FullVersion:
+            mbar=self.GetMenuBar()
+            if mbar.IsChecked(705):
+                self.server.shutdown()
+            if self.mDNS<>None:
+                self.mDNS.close()
+            if 'kadp_ctrl' in GlobalConfig:
+                kadp_ctrl = GlobalConfig['kadp_ctrl']
+        ##        kadp_ctrl.preparestop(False)
+        ##        print "start to kill KADP"
+        ##        self.KADP_Process.kill()
+        ##        print "finish stop KADP"
 
-            try:
-                kadp_ctrl.stopall(False)
-            except:
                 try:
-                    self.KADP_Process.kill()
+                    kadp_ctrl.stopall(False)
                 except:
-                    pass
+                    try:
+                        self.KADP_Process.kill()
+                    except:
+                        pass
 
-    ##            if MYOS != 'Windows':
-    ##                os.kill(self.KADP_Process.pid, signal.SIGKILL)
-    ##            else:
-    ##                os.kill(self.KADP_Process.pid, signal.CTRL_C_EVENT)
+        ##            if MYOS != 'Windows':
+        ##                os.kill(self.KADP_Process.pid, signal.SIGKILL)
+        ##            else:
+        ##                os.kill(self.KADP_Process.pid, signal.CTRL_C_EVENT)
         writeKeyConfig()
         event.Skip()
 
@@ -9428,331 +9454,331 @@ class FileDrop(wx.FileDropTarget):
             else:
                 self.window.LoadFile(filenames,openmethod='append')
 
-
-class LBHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
-
-
-    """Simple HTTP request handler with GET and HEAD commands.
-
-    This serves files from the current directory and any of its
-    subdirectories.  The MIME type for files is determined by
-    calling the .guess_type() method.
-
-    The GET and HEAD requests are identical except that the HEAD
-    request omits the actual contents of the file.
-
-    """
-    __version__ = "0.1"
-    __all__ = ["LBHTTPRequestHandler"]
-    server_version = "SimpleHTTP/" +__version__
-    prefixpath=None
+if FullVersion:
+    class LBHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 
-    def log_request(self,code=1,size=0):
-        pass
+        """Simple HTTP request handler with GET and HEAD commands.
 
-    def log_error(self,*args, **kwds):
-        pass
+        This serves files from the current directory and any of its
+        subdirectories.  The MIME type for files is determined by
+        calling the .guess_type() method.
 
-    def setup(self):
-        global GlobalConfig
-        BaseHTTPServer.BaseHTTPRequestHandler.setup(self)
-        self.prefixpath=GlobalConfig['ShareRoot']
-
-
-    def do_GET(self):
-        """Serve a GET request."""
-        f = self.send_head()
-        if f:
-            self.copyfile(f, self.wfile)
-            f.close()
-
-    def do_HEAD(self):
-        """Serve a HEAD request."""
-        f = self.send_head()
-        if f:
-            f.close()
-
-    def send_head(self):
-        """Common code for GET and HEAD commands.
-
-        This sends the response code and MIME headers.
-
-        Return value is either a file object (which has to be copied
-        to the outputfile by the caller unless the command was HEAD,
-        and must be closed by the caller under all circumstances), or
-        None, in which case the caller has nothing further to do.
+        The GET and HEAD requests are identical except that the HEAD
+        request omits the actual contents of the file.
 
         """
-        path = self.translate_path(self.path)
-        f = None
-        if os.path.isdir(path):
-            if not self.path.endswith('/'):
-                # redirect browser - doing basically what apache does
-                self.send_response(301)
-                self.send_header("Location", self.path + "/")
-                self.end_headers()
-                return None
-            for index in "index.html", "index.htm":
-                index = os.path.join(path, index)
-                if os.path.exists(index):
-                    path = index
-                    break
-            else:
-                return self.list_directory(path)
-        ctype = self.guess_type(path)
-        try:
-            # Always read in binary mode. Opening files in text mode may cause
-            # newline translations, making the actual size of the content
-            # transmitted *less* than the content-length!
-            f = open(path, 'rb')
-        except IOError:
-            self.send_error(404,"File not found")
-            return None
-        self.send_response(200)
-        self.send_header("Content-type", ctype)
-        fs = os.fstat(f.fileno())
-        self.send_header("Content-Length", str(fs[6]))
-        self.send_header("Last-Modified", self.date_time_string(fs.st_mtime))
-        self.end_headers()
-        return f
-
-    def list_directory(self, path):
-        client_addr = self.client_address[0]
-        if myup.checkLocalIP(client_addr)==False:
-            return
-        try:
-            browser=unicode(self.headers['user-agent'])
-        except:
-            browser=u'unknown'
-        f = StringIO()
-        if browser.find(u'Stanza')<>-1:
-            #if the browser is Stanza
-            flist=glob.glob(self.prefixpath+os.sep+"*.epub")
-##        fp=open('test.xml','r')
-##        buf=fp.read()
-            xml_header=u"""<?xml version='1.0' encoding='utf-8'?>
-    <feed xmlns:dc="http://purl.org/dc/terms/" xmlns:opds="http://opds-spec.org/2010/catalog" xmlns="http://www.w3.org/2005/Atom">
-      <title>LiteBook书库</title>
-      <author>
-        <name>LiteBook.Author</name>
-        <uri>http://code.google.com/p/litebook-project/</uri>
-      </author>
-      """
-            xml_header=xml_header.encode('utf-8')
-            f.write(xml_header)
-            for fname in flist:
-    ##            if not isinstance(fname,unicode):
-    ##                fname=fname.decode('gbk')
-                f.write("  <entry>\n")
-                if not isinstance(fname,unicode): fname=fname.decode('gbk')
-                fname=fname.encode('utf-8')
-                bname=os.path.basename(fname)
-                f.write("<title>"+bname[:-4]+'</title>\n')
-                f.write('<author>\n<name>unknown</name></author>\n')
-                cont=u'<content type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">标签：General Fiction<br/></div></content>'
-                cont=cont.encode('utf-8')
-                f.write(cont+'\n')
-                burl="<link href='/"+bname+"' type='application/epub+zip'/>\n"
-                burl=urllib.quote('/'+bname)
-                f.write("<link href='"+burl+"' type='application/epub+zip'/>\n")
-                f.write("  </entry>\n")
-            f.write('</feed>')
-            length = f.tell()
-            f.seek(0)
-            self.send_response(200)
-            self.send_header("Content-type", "application/atom+xml")
-            self.send_header("Content-Length", str(length))
-            self.end_headers()
-        else:
-            msg=u"""<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <title>LItebook共享书库</title>
-</head>
-<body>
-<h2>LiteBook 共享图书列表：</h2>
-<ul>"""
-            msg=msg.encode('utf-8')
-            f.write(msg)
-            flist=glob.glob(self.prefixpath+os.sep+"*.*")
-            for fname in flist:
-                if not isinstance(fname,unicode): fname=fname.decode('gbk')
-                fname=fname.encode('utf-8')
-                bname=os.path.basename(fname)
-                burl=urllib.quote('/'+bname)
-                f.write("<li><a href='"+burl+"'>"+bname+"</a></li>\n")
-            d=datetime(2000,1,1)
-            ds=unicode(d.now())
-            end=u"</ul>注：本列表由litebook自动生成于"+ds+"</body></html>"
-            end=end.encode('utf-8')
-            f.write(end)
-            length=f.tell()
-            f.seek(0)
-            self.send_response(200)
-            self.send_header("Content-type", "text/html")
-            self.send_header("Content-Length", str(length))
-            self.end_headers()
-        return f
+        __version__ = "0.1"
+        __all__ = ["LBHTTPRequestHandler"]
+        server_version = "SimpleHTTP/" +__version__
+        prefixpath=None
 
 
-
-
-
-
-    def translate_path(self, path):
-        """Translate a /-separated PATH to the local filename syntax.
-
-        Components that mean special things to the local file system
-        (e.g. drive or directory names) are ignored.  (XXX They should
-        probably be diagnosed.)
-        - add prefix_path support; added by Hu Jun 2011-03-13
-        """
-        # abandon query parameters
-        path = path.split('?',1)[0]
-        path = path.split('#',1)[0]
-        path = posixpath.normpath(urllib.unquote(path))
-        path=path.decode('utf-8')
-        words = path.split('/')
-        words = filter(None, words)
-        path=self.prefixpath
-        for word in words:
-            drive, word = os.path.splitdrive(word)
-            head, word = os.path.split(word)
-            if word in (os.curdir, os.pardir): continue
-            path = os.path.join(path, word)
-        return path
-
-    def copyfile(self, source, outputfile):
-        """Copy all data between two file objects.
-
-        The SOURCE argument is a file object open for reading
-        (or anything with a read() method) and the DESTINATION
-        argument is a file object open for writing (or
-        anything with a write() method).
-
-        The only reason for overriding this would be to change
-        the block size or perhaps to replace newlines by CRLF
-        -- note however that this the default server uses this
-        to copy binary data as well.
-
-        """
-        if not 'Range' in self.headers:
-            shutil.copyfileobj(source, outputfile)
-        else:#this is to support Range Get
-            (startpos,endpos)=self.headers['Range'][6:].split('-')
-            if startpos=='':startpos=0
-            else:
-                startpos=int(startpos)
-            if endpos=='':
-                endpos=os.fstat(source.fileno()).st_size
-            else:
-                endpos=int(endpos)
-            source.seek(startpos)
-            ins=source.read(endpos-startpos)
-            outputfile.write(ins)
-            source.close()
-            outputfile.close()
-
-    def guess_type(self, path):
-        """Guess the type of a file.
-
-        Argument is a PATH (a filename).
-
-        Return value is a string of the form type/subtype,
-        usable for a MIME Content-type header.
-
-        The default implementation looks the file's extension
-        up in the table self.extensions_map, using application/octet-stream
-        as a default; however it would be permissible (if
-        slow) to look inside the data to make a better guess.
-
-        """
-
-        base, ext = posixpath.splitext(path)
-        if ext in self.extensions_map:
-            return self.extensions_map[ext]
-        ext = ext.lower()
-        if ext in self.extensions_map:
-            return self.extensions_map[ext]
-        else:
-            return self.extensions_map['']
-
-##    if not mimetypes.inited:
-##        mimetypes.init() # try to read system mime.types
-##    extensions_map = mimetypes.types_map.copy()
-    extensions_map={}
-    extensions_map.update({
-        '': 'application/octet-stream', # Default
-        '.py': 'text/plain',
-        '.c': 'text/plain',
-        '.h': 'text/plain',
-        '.epub': 'application/epub+zip'
-        })
-
-class ThreadedLBServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
-    pass
-
-class ThreadAddUPNPMapping(threading.Thread):
-    def __init__(self,win):
-        threading.Thread.__init__(self)
-        self.win=win
-
-    def run(self):
-        global GlobalConfig
-        #add UPNP mapping
-        ml=[
-        {'port':GlobalConfig['ServerPort'],'proto':'TCP','desc':"LITEBOOK"},
-        {'port':GlobalConfig['LTBNETPort'],'proto':'UDP','desc':"LITEBOOK"},
-        ]
-        r=False
-        try:
-            r=myup.changePortMapping(ml,'add')
-        except Exception as inst:
-            #print inst
-            r=False
+        def log_request(self,code=1,size=0):
             pass
-        if r==False:
-            evt=AlertMsgEvt(txt=u'UPNP端口映射设置失败！请手动设置宽带路由器并添加相应的端口映射。')
-        else:
-            evt=AlertMsgEvt(txt=u'UPNP端口映射设置完成')
-        wx.PostEvent(self.win, evt)
-        evt = UpdateStatusBarEvent(FieldNum = 3, Value =u'')
-        wx.PostEvent(self.win, evt)
-        return
 
-class ThreadChkPort(threading.Thread):
-    def __init__(self,win,alertOnOpen=True):
-        threading.Thread.__init__(self)
-        self.win=win
-        self.aOO=alertOnOpen
+        def log_error(self,*args, **kwds):
+            pass
 
-    def run(self):
-        global GlobalConfig
-        for x in range(30):
-            time.sleep(1)
+        def setup(self):
+            global GlobalConfig
+            BaseHTTPServer.BaseHTTPRequestHandler.setup(self)
+            self.prefixpath=GlobalConfig['ShareRoot']
+
+
+        def do_GET(self):
+            """Serve a GET request."""
+            f = self.send_head()
+            if f:
+                self.copyfile(f, self.wfile)
+                f.close()
+
+        def do_HEAD(self):
+            """Serve a HEAD request."""
+            f = self.send_head()
+            if f:
+                f.close()
+
+        def send_head(self):
+            """Common code for GET and HEAD commands.
+
+            This sends the response code and MIME headers.
+
+            Return value is either a file object (which has to be copied
+            to the outputfile by the caller unless the command was HEAD,
+            and must be closed by the caller under all circumstances), or
+            None, in which case the caller has nothing further to do.
+
+            """
+            path = self.translate_path(self.path)
+            f = None
+            if os.path.isdir(path):
+                if not self.path.endswith('/'):
+                    # redirect browser - doing basically what apache does
+                    self.send_response(301)
+                    self.send_header("Location", self.path + "/")
+                    self.end_headers()
+                    return None
+                for index in "index.html", "index.htm":
+                    index = os.path.join(path, index)
+                    if os.path.exists(index):
+                        path = index
+                        break
+                else:
+                    return self.list_directory(path)
+            ctype = self.guess_type(path)
             try:
-                pstatus=GlobalConfig['kadp_ctrl'].PortStatus(False)
+                # Always read in binary mode. Opening files in text mode may cause
+                # newline translations, making the actual size of the content
+                # transmitted *less* than the content-length!
+                f = open(path, 'rb')
+            except IOError:
+                self.send_error(404,"File not found")
+                return None
+            self.send_response(200)
+            self.send_header("Content-type", ctype)
+            fs = os.fstat(f.fileno())
+            self.send_header("Content-Length", str(fs[6]))
+            self.send_header("Last-Modified", self.date_time_string(fs.st_mtime))
+            self.end_headers()
+            return f
+
+        def list_directory(self, path):
+            client_addr = self.client_address[0]
+            if myup.checkLocalIP(client_addr)==False:
+                return
+            try:
+                browser=unicode(self.headers['user-agent'])
             except:
-                continue
-            if pstatus==-1:
-                evt=AlertMsgEvt(txt=u'LTBNET端口未打开！请设置宽带路由器并添加相应的端口映射。')
-                wx.PostEvent(self.win, evt)
-                evt = UpdateStatusBarEvent(FieldNum = 3, Value =u'')
-                wx.PostEvent(self.win, evt)
-                return
-            elif pstatus==1:
-                if self.aOO==True:
-                    evt=AlertMsgEvt(txt=u'LTBNET端口已打开！')
+                browser=u'unknown'
+            f = StringIO()
+            if browser.find(u'Stanza')<>-1:
+                #if the browser is Stanza
+                flist=glob.glob(self.prefixpath+os.sep+"*.epub")
+    ##        fp=open('test.xml','r')
+    ##        buf=fp.read()
+                xml_header=u"""<?xml version='1.0' encoding='utf-8'?>
+        <feed xmlns:dc="http://purl.org/dc/terms/" xmlns:opds="http://opds-spec.org/2010/catalog" xmlns="http://www.w3.org/2005/Atom">
+          <title>LiteBook书库</title>
+          <author>
+            <name>LiteBook.Author</name>
+            <uri>http://code.google.com/p/litebook-project/</uri>
+          </author>
+          """
+                xml_header=xml_header.encode('utf-8')
+                f.write(xml_header)
+                for fname in flist:
+        ##            if not isinstance(fname,unicode):
+        ##                fname=fname.decode('gbk')
+                    f.write("  <entry>\n")
+                    if not isinstance(fname,unicode): fname=fname.decode('gbk')
+                    fname=fname.encode('utf-8')
+                    bname=os.path.basename(fname)
+                    f.write("<title>"+bname[:-4]+'</title>\n')
+                    f.write('<author>\n<name>unknown</name></author>\n')
+                    cont=u'<content type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">标签：General Fiction<br/></div></content>'
+                    cont=cont.encode('utf-8')
+                    f.write(cont+'\n')
+                    burl="<link href='/"+bname+"' type='application/epub+zip'/>\n"
+                    burl=urllib.quote('/'+bname)
+                    f.write("<link href='"+burl+"' type='application/epub+zip'/>\n")
+                    f.write("  </entry>\n")
+                f.write('</feed>')
+                length = f.tell()
+                f.seek(0)
+                self.send_response(200)
+                self.send_header("Content-type", "application/atom+xml")
+                self.send_header("Content-Length", str(length))
+                self.end_headers()
+            else:
+                msg=u"""<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+      <title>LItebook共享书库</title>
+    </head>
+    <body>
+    <h2>LiteBook 共享图书列表：</h2>
+    <ul>"""
+                msg=msg.encode('utf-8')
+                f.write(msg)
+                flist=glob.glob(self.prefixpath+os.sep+"*.*")
+                for fname in flist:
+                    if not isinstance(fname,unicode): fname=fname.decode('gbk')
+                    fname=fname.encode('utf-8')
+                    bname=os.path.basename(fname)
+                    burl=urllib.quote('/'+bname)
+                    f.write("<li><a href='"+burl+"'>"+bname+"</a></li>\n")
+                d=datetime(2000,1,1)
+                ds=unicode(d.now())
+                end=u"</ul>注：本列表由litebook自动生成于"+ds+"</body></html>"
+                end=end.encode('utf-8')
+                f.write(end)
+                length=f.tell()
+                f.seek(0)
+                self.send_response(200)
+                self.send_header("Content-type", "text/html")
+                self.send_header("Content-Length", str(length))
+                self.end_headers()
+            return f
+
+
+
+
+
+
+        def translate_path(self, path):
+            """Translate a /-separated PATH to the local filename syntax.
+
+            Components that mean special things to the local file system
+            (e.g. drive or directory names) are ignored.  (XXX They should
+            probably be diagnosed.)
+            - add prefix_path support; added by Hu Jun 2011-03-13
+            """
+            # abandon query parameters
+            path = path.split('?',1)[0]
+            path = path.split('#',1)[0]
+            path = posixpath.normpath(urllib.unquote(path))
+            path=path.decode('utf-8')
+            words = path.split('/')
+            words = filter(None, words)
+            path=self.prefixpath
+            for word in words:
+                drive, word = os.path.splitdrive(word)
+                head, word = os.path.split(word)
+                if word in (os.curdir, os.pardir): continue
+                path = os.path.join(path, word)
+            return path
+
+        def copyfile(self, source, outputfile):
+            """Copy all data between two file objects.
+
+            The SOURCE argument is a file object open for reading
+            (or anything with a read() method) and the DESTINATION
+            argument is a file object open for writing (or
+            anything with a write() method).
+
+            The only reason for overriding this would be to change
+            the block size or perhaps to replace newlines by CRLF
+            -- note however that this the default server uses this
+            to copy binary data as well.
+
+            """
+            if not 'Range' in self.headers:
+                shutil.copyfileobj(source, outputfile)
+            else:#this is to support Range Get
+                (startpos,endpos)=self.headers['Range'][6:].split('-')
+                if startpos=='':startpos=0
+                else:
+                    startpos=int(startpos)
+                if endpos=='':
+                    endpos=os.fstat(source.fileno()).st_size
+                else:
+                    endpos=int(endpos)
+                source.seek(startpos)
+                ins=source.read(endpos-startpos)
+                outputfile.write(ins)
+                source.close()
+                outputfile.close()
+
+        def guess_type(self, path):
+            """Guess the type of a file.
+
+            Argument is a PATH (a filename).
+
+            Return value is a string of the form type/subtype,
+            usable for a MIME Content-type header.
+
+            The default implementation looks the file's extension
+            up in the table self.extensions_map, using application/octet-stream
+            as a default; however it would be permissible (if
+            slow) to look inside the data to make a better guess.
+
+            """
+
+            base, ext = posixpath.splitext(path)
+            if ext in self.extensions_map:
+                return self.extensions_map[ext]
+            ext = ext.lower()
+            if ext in self.extensions_map:
+                return self.extensions_map[ext]
+            else:
+                return self.extensions_map['']
+
+    ##    if not mimetypes.inited:
+    ##        mimetypes.init() # try to read system mime.types
+    ##    extensions_map = mimetypes.types_map.copy()
+        extensions_map={}
+        extensions_map.update({
+            '': 'application/octet-stream', # Default
+            '.py': 'text/plain',
+            '.c': 'text/plain',
+            '.h': 'text/plain',
+            '.epub': 'application/epub+zip'
+            })
+
+    class ThreadedLBServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+        pass
+
+    class ThreadAddUPNPMapping(threading.Thread):
+        def __init__(self,win):
+            threading.Thread.__init__(self)
+            self.win=win
+
+        def run(self):
+            global GlobalConfig
+            #add UPNP mapping
+            ml=[
+            {'port':GlobalConfig['ServerPort'],'proto':'TCP','desc':"LITEBOOK"},
+            {'port':GlobalConfig['LTBNETPort'],'proto':'UDP','desc':"LITEBOOK"},
+            ]
+            r=False
+            try:
+                r=myup.changePortMapping(ml,'add')
+            except Exception as inst:
+                print inst
+                r=False
+                pass
+            if r==False:
+                evt=AlertMsgEvt(txt=u'UPNP端口映射设置失败！请手动设置宽带路由器并添加相应的端口映射。')
+            else:
+                evt=AlertMsgEvt(txt=u'UPNP端口映射设置完成')
+            wx.PostEvent(self.win, evt)
+            evt = UpdateStatusBarEvent(FieldNum = 3, Value =u'')
+            wx.PostEvent(self.win, evt)
+            return
+
+    class ThreadChkPort(threading.Thread):
+        def __init__(self,win,alertOnOpen=True):
+            threading.Thread.__init__(self)
+            self.win=win
+            self.aOO=alertOnOpen
+
+        def run(self):
+            global GlobalConfig
+            for x in range(30):
+                time.sleep(1)
+                try:
+                    pstatus=GlobalConfig['kadp_ctrl'].PortStatus(False)
+                except:
+                    continue
+                if pstatus==-1:
+                    evt=AlertMsgEvt(txt=u'LTBNET端口未打开！请设置宽带路由器并添加相应的端口映射。')
                     wx.PostEvent(self.win, evt)
-                evt = UpdateStatusBarEvent(FieldNum = 3, Value =u'')
-                wx.PostEvent(self.win, evt)
-                return
-        evt=AlertMsgEvt(txt=u'LTBNET端口未打开！请设置宽带路由器并添加相应的端口映射。')
-        wx.PostEvent(self.win, evt)
-        evt = UpdateStatusBarEvent(FieldNum = 3, Value =u'')
-        wx.PostEvent(self.win, evt)
-        return
+                    evt = UpdateStatusBarEvent(FieldNum = 3, Value =u'')
+                    wx.PostEvent(self.win, evt)
+                    return
+                elif pstatus==1:
+                    if self.aOO==True:
+                        evt=AlertMsgEvt(txt=u'LTBNET端口已打开！')
+                        wx.PostEvent(self.win, evt)
+                    evt = UpdateStatusBarEvent(FieldNum = 3, Value =u'')
+                    wx.PostEvent(self.win, evt)
+                    return
+            evt=AlertMsgEvt(txt=u'LTBNET端口未打开！请设置宽带路由器并添加相应的端口映射。')
+            wx.PostEvent(self.win, evt)
+            evt = UpdateStatusBarEvent(FieldNum = 3, Value =u'')
+            wx.PostEvent(self.win, evt)
+            return
 
 
 if __name__ == "__main__":
@@ -9825,10 +9851,14 @@ if __name__ == "__main__":
                         os.remove(unicode(os.environ['HOME'],'utf-8')+u"/.litebook.ini")
                     except:
                         pass
-            else:
+            elif sys.argv[1]!='-full':
                 fname=sys.argv[1]
                 fname=os.path.abspath(fname)
-
+            else:
+                if len(sys.argv)>2:
+                    fname=sys.argv[2]
+                    fname=os.path.abspath(fname)
+            if fname!=None:
                 if not os.path.exists(fname):
                     print fname,u'不存在!'
                     sys.exit()
@@ -9842,9 +9872,14 @@ if __name__ == "__main__":
                         os.remove(os.environ['APPDATA'].decode('gbk')+u"\\litebook_key.ini")
                     except:
                         pass
-            else:
+            elif sys.argv[1]!='-full':
                 fname=sys.argv[1]
                 fname=os.path.abspath(fname)
+            else:
+                if len(sys.argv)>2:
+                    fname=sys.argv[2]
+                    fname=os.path.abspath(fname)
+            if fname!=None:
                 if not os.path.exists(fname):
                     dlg = wx.MessageDialog(None,fname+u' 不存在',u"错误！",wx.OK|wx.ICON_ERROR)
                     dlg.ShowModal()
