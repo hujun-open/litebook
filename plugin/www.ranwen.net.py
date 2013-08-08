@@ -201,6 +201,8 @@ def GetSearchResults(key,useproxy=False,proxyserver='',proxyport=0,proxyuser='',
             r['booksize']=col_list[3].text
             r['lastupdatetime']=col_list[4].text
             r['bookstatus']=col_list[5].xpath('font')[0].text
+            for k in r.keys():
+                if r[k]==None:r[k]=''
             rlist.append(r)
         return rlist
     else:#means the search result is a direct hit, the result page is the book portal page
@@ -217,6 +219,8 @@ def GetSearchResults(key,useproxy=False,proxyserver='',proxyport=0,proxyuser='',
             return []
 ##        for k,v in r.items():
 ##            print k,v
+        for k in r.keys():
+            if r[k]==None:r[k]=''
         return [r]
     return []
 

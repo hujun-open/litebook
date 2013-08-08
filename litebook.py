@@ -337,7 +337,7 @@ BookMarkList=[]
 ThemeList=[]
 BookDB=[]
 Ticking=True
-Version='3.1 i '+MYOS
+Version='3.1 '+MYOS
 I_Version=3.10 # this is used to check updated version
 lb_hash='3de03ac38cc1c2dc0547ee09f866ee7b'
 
@@ -7130,6 +7130,8 @@ class web_search_result_dialog(wx.Dialog):
         if self.rlist<>None:
             i=0
             for r in self.rlist:
+                for k in r.keys():
+                    if r[k]==None:r[k]=''
                 index=self.list_ctrl_1.InsertStringItem(sys.maxint,r['bookname'])
                 self.list_ctrl_1.SetStringItem(index,1,r['authorname'])
                 self.list_ctrl_1.SetStringItem(index,2,r['bookstatus'])
