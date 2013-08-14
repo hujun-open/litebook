@@ -1,4 +1,4 @@
-﻿LiteBook ver3.0
+﻿LiteBook ver3.1
 (c)2013 Hu Jun	
 
 1.概述
@@ -67,7 +67,6 @@ LiteBook是一个开源看书软件，具备如下主要功能：
 
 
 3.帮助文档
-(Beta1中暂不包括帮助文档)
 - 在litebook运行之后点击菜单“帮助”-》“简明帮助”或是快捷键F1
 - 或者直接用web浏览器打开litebook子目录"helpdoc"下的"index.htm"
 
@@ -97,6 +96,7 @@ netifaces: Alastair Houghton
 
 本软件的网络搜索功能支持并感谢如下网站：
 燃文：www.ranwen.net
+爱尚：www.23xsw.net
 
 7.本软件授权（License）
 本软件遵循GPL 2.0和如下条款：
