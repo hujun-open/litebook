@@ -7819,7 +7819,7 @@ class NewOptionDialog(wx.Dialog):
         # end wxGlade
 
     def __set_properties(self):
-        global GlobalConfig
+        global GlobalConfig,FullVersion
         # begin wxGlade: NewOptionDialog.__set_properties
         self.SetTitle(u"选项对话框")
         self.SetSize((600, 500))
@@ -7926,28 +7926,28 @@ class NewOptionDialog(wx.Dialog):
         self.spin_ctrl_webport.SetValue(int(GlobalConfig['ServerPort']))
         self.text_ctrl_webroot.SetValue(GlobalConfig['ShareRoot'])
         #set the inital value for mDNS interface
-
         ip_int_name_list=[]
-        if platform.system() == 'Linux':
-            bus = dbus.SystemBus()
-            proxy = bus.get_object("org.freedesktop.NetworkManager",
-            "/org/freedesktop/NetworkManager")
-            manager = dbus.Interface(proxy, "org.freedesktop.NetworkManager")
-            # Get device-specific state
-            devices = manager.GetDevices()
-            for d in devices:
-               dev_proxy = bus.get_object("org.freedesktop.NetworkManager", d)
-               prop_iface = dbus.Interface(dev_proxy, "org.freedesktop.DBus.Properties")
+        if FullVersion==True:
+            if platform.system() == 'Linux':
+                bus = dbus.SystemBus()
+                proxy = bus.get_object("org.freedesktop.NetworkManager",
+                "/org/freedesktop/NetworkManager")
+                manager = dbus.Interface(proxy, "org.freedesktop.NetworkManager")
+                # Get device-specific state
+                devices = manager.GetDevices()
+                for d in devices:
+                   dev_proxy = bus.get_object("org.freedesktop.NetworkManager", d)
+                   prop_iface = dbus.Interface(dev_proxy, "org.freedesktop.DBus.Properties")
 
-               # Get the device's current state and interface name
-               state = prop_iface.Get("org.freedesktop.NetworkManager.Device", "State")
-               name = prop_iface.Get("org.freedesktop.NetworkManager.Device", "Interface")
-               ip_int_name_list.append(name)
+                   # Get the device's current state and interface name
+                   state = prop_iface.Get("org.freedesktop.NetworkManager.Device", "State")
+                   name = prop_iface.Get("org.freedesktop.NetworkManager.Device", "Interface")
+                   ip_int_name_list.append(name)
 
-        elif platform.system() == 'Darwin':
-            for ifname in netifaces.interfaces(): #return addr of 1st network interface
-                if ifname != 'lo0':
-                    ip_int_name_list.append(ifname)
+            elif platform.system() == 'Darwin':
+                for ifname in netifaces.interfaces(): #return addr of 1st network interface
+                    if ifname != 'lo0':
+                        ip_int_name_list.append(ifname)
 
 
         self.combo_box_MDNS.Append(u"自动检测")
