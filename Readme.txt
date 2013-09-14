@@ -31,8 +31,12 @@ LiteBook是一个开源看书软件，具备如下主要功能：
 － 在线版本检查
 － 记录并查看文件打开历史
 
+2. 获取源文件
+－ 3.1之前的版本： 从官方网站( http://code.google.com/p/litebook-project/)的SVN中获取最新的源代码，或是在官方网站的下载页面下载源码版。从svn中checkout源码的方法：svn checkout http://litebook-project.googlecode.com/svn/trunk/2.0-Dev/single litebook3
+－ 3.1：git clone https://github.com/litebook/litebook.git
 
-2. 安装和运行
+
+3. 安装和运行
 ------------------------------------------------------------
 
 - LiteBook在windows下提供安装文件，安装完毕即可运行。
@@ -40,7 +44,7 @@ LiteBook是一个开源看书软件，具备如下主要功能：
 ------------------------------------------------------------
 
 - LiteBook在Linux下面只能以python源码形式运行,步骤如下：
-	(1)从官方网站( http://code.google.com/p/litebook-project/)的SVN中获取最新的源代码，或是在官方网站的下载页面下载源码版。从svn中checkout源码的方法：svn checkout http://litebook-project.googlecode.com/svn/trunk/2.0-Dev/single litebook3
+	(1)获取源代码
 
 	(2).确认你的系统中安装有如下python环境：
 	- Python 2.7（不支持python 3.0）
@@ -54,7 +58,7 @@ LiteBook是一个开源看书软件，具备如下主要功能：
 ------------------------------------------------------------
 
 - LiteBook在MAC OSX下面只能以python源码形式运行,步骤如下：
-	(1)从官方网站( http://code.google.com/p/litebook-project/)的SVN中获取最新的源代码，或是在官方网站的下载页面下载源码版。从svn中checkout源码的方法：svn checkout http://litebook-project.googlecode.com/svn/trunk/2.0-Dev/single litebook3
+	(1)获取源代码
 
 	(2).确认你的系统中安装有如下python环境：
 	- Python 2.7（不支持python 3.0）
@@ -66,19 +70,19 @@ LiteBook是一个开源看书软件，具备如下主要功能：
 
 
 
-3.帮助文档
+4.帮助文档
 - 在litebook运行之后点击菜单“帮助”-》“简明帮助”或是快捷键F1
 - 或者直接用web浏览器打开litebook子目录"helpdoc"下的"index.htm"
 
-4.LTBNET
+5.LTBNET
 请参见"LTBNET_Readme.txt"
 
-5.和作者联系
+6.和作者联系
 Email:	litebook.author@gmail.com
 WWW:	http://code.google.com/p/litebook-project/
 
 
-6.致谢
+7.致谢
 本软件使用了如下的库程序，在此向其作者致谢：
 Python:Guido van Rossum
 WxPython:Robin Dunn,Harri Pasanen
@@ -98,7 +102,6 @@ netifaces: Alastair Houghton
 燃文：www.ranwen.net
 爱尚：www.23xsw.net
 
-7.本软件授权（License）
+8.本软件授权（License）
 本软件遵循GPL 2.0和如下条款：
-- 如果你希望重新分发（无论修改或是不修改源码），那么在你这么做以前，必须发一个
-email到litebook.author@gmail.com告知。
+- 如果你希望重新分发（无论修改或是不修改源码），那么在你这么做以前，必须发一个email到litebook.author@gmail.com告知。

@@ -1876,6 +1876,7 @@ def umd_field_decode(fp,pos):
         chapter_offset=[]
         while i<offset_len:
             chapter_offset.append(struct.unpack('=I',fp.read(4))[0])
+##            print chapter_offset
             i+=4
             fp.seek(pos+i,0)
 ##        print "chapter offsets are:"
