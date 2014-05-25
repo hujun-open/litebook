@@ -28,7 +28,7 @@ if FullVersion:
 
 
 import web_download_manager
-import fj
+import jf
 import traceback
 import platform
 
@@ -471,28 +471,11 @@ def isfull(l):
 
 def JtoF(data):
    #简体到繁体
-   max=fj.zh_dict.__len__()
-   dlg = wx.ProgressDialog(u"简体－>繁体", u'    正在转换中...   ',max,None,wx.PD_SMOOTH|wx.PD_AUTO_HIDE)
-   i=0
-   for s in fj.zh_dict:
-       i+=1
-       dlg.Update(i)
-       data = data.replace(s,fj.zh_dict[s])
-   dlg.Destroy()
-   return data
+    return jf.jtof(data)
 
 def FtoJ(data):
    #繁体到简体
-   max=fj.zh_dict.__len__()
-   dlg = wx.ProgressDialog(u"繁体－>简体", u'    正在转换中...    ',max,None,wx.PD_SMOOTH|wx.PD_AUTO_HIDE)
-   i=0
-   for s in fj.zh_dict:
-       i+=1
-       dlg.Update(i)
-       data = data.replace(fj.zh_dict[s],s)
-   dlg.Destroy()
-   return data
-
+   return jf.ftoj(data)
 
 
 def GenCatalog(instr,divide_method=0,zishu=10000):
@@ -3906,20 +3889,14 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
 
     def Tool42(self, event): # wxGlade: MyFrame.<event_handler>
         txt=self.text_ctrl_1.GetValue()
-        txt=txt.encode('utf-8')
-#        txt=jft.f2j('utf-8','utf-8',txt)
         txt=FtoJ(txt)
-        txt=txt.decode('utf-8')
         pos=self.GetCurrentPos()
         self.text_ctrl_1.SetValue(txt)
         self.text_ctrl_1.JumpTo(pos)
 
     def Tool43(self, event): # wxGlade: MyFrame.<event_handler>
         txt=self.text_ctrl_1.GetValue()
-        txt=txt.encode('utf-8')
-#        txt=jft.j2f('utf-8','utf-8',txt)
         txt=JtoF(txt)
-        txt=txt.decode('utf-8')
         pos=self.GetCurrentPos()
         self.text_ctrl_1.SetValue(txt)
         self.text_ctrl_1.JumpTo(pos)
@@ -9840,7 +9817,7 @@ if __name__ == "__main__":
         SqlCon.execute(sqlstr)
 
 
-    app = wx.PySimpleApp(False)
+    app = wx.App(True)
     #app = wx.PySimpleApp(0)
     fname=None
     if MYOS != 'Windows':
@@ -9895,7 +9872,7 @@ if __name__ == "__main__":
     readKeyConfig()
     readPlugin()
     if GlobalConfig['InstallDefaultConfig']:InstallDefaultConfig()
-    wx.InitAllImageHandlers()
+    #wx.InitAllImageHandlers()
     t0=time.time()
     frame_1 = MyFrame(None,fname)
     app.SetTopWindow(frame_1)
