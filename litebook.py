@@ -337,8 +337,8 @@ BookMarkList=[]
 ThemeList=[]
 BookDB=[]
 Ticking=True
-Version='3.1 '+MYOS
-I_Version=3.10 # this is used to check updated version
+Version='3.2 '+MYOS
+I_Version=3.20 # this is used to check updated version
 lb_hash='3de03ac38cc1c2dc0547ee09f866ee7b'
 
 def cur_file_dir():
@@ -2160,6 +2160,8 @@ def ch2num(ch):
        x+=rr[i]*math.pow(10,5*(3-i))
        i+=1
     return long(x)
+
+
 
 
 class ZipFileDialog(wx.Dialog):

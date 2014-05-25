@@ -1567,6 +1567,7 @@ class LiteView(wx.ScrolledWindow):
                     tmptxt=self.Value[cur_pos:cur_pos+maxcount]
                 else:
                     tmptxt=self.Value[cur_pos:]
+                tmptxt=self.toVBook(tmptxt)
                 ptxtlist=self.mywrap(tmptxt)
                 if tmptxt[len(tmptxt)-1]<>'\n':ptxtlist[len(ptxtlist)-1][1]=0
                 line=0
@@ -1621,6 +1622,7 @@ class LiteView(wx.ScrolledWindow):
                 if pos1<0: pos1=0
                 pos2=self.start_pos
                 tmptxt=self.Value[pos1:pos2]
+                tmptxt=self.toVBook(tmptxt)
                 ptxtlist=self.mywrap(tmptxt)
                 if tmptxt[len(tmptxt)-1]<>'\n':ptxtlist[len(ptxtlist)-1][1]=0
                 line=len(ptxtlist)-1
@@ -1631,6 +1633,7 @@ class LiteView(wx.ScrolledWindow):
                 elist=[]
                 if tlen<0:
                     tmptxt=self.Value[:maxcount]
+                    tmptxt=self.toVBook(tmptxt)
                     ptxtlist=self.mywrap(tmptxt)
                     if tmptxt[len(tmptxt)-1]<>'\n':ptxtlist[len(ptxtlist)-1][1]=0
                     line=0
@@ -1737,7 +1740,35 @@ class LiteView(wx.ScrolledWindow):
 
 
 
-
+    def toVBook(self,instr,mode=0):
+        """
+        将instr转换为适合竖排书本显示模式
+        mode:
+            1:将标点符号变成竖排标点
+            2:去掉所有标点，只留竖排︒
+        """
+        h2v={
+        u'.':u'\ufe12',
+        u'。':u'\ufe12',
+        u',':u'\ufe10',
+        u'，':u'\ufe10',
+        u'、':u'\ufe11',
+        u':':u'\ufe13',
+        u'：':u'\ufe13',
+        u';':u'\ufe14',
+        u'；':u'\ufe14',
+        u'!':u'\ufe15',
+        u'！':u'\ufe15',
+        u'?':u'\ufe16',
+        u'？':u'\ufe16',
+        u'“':u'\ufe17',
+        u'”':u'\ufe18',
+        u"‘":u'\ufe17',
+        u'’':u'\ufe18',
+        u'\u2026':u'\ufe19',
+        }
+        tovb_table = dict((ord(char),h2v[char]) for char in h2v.keys())
+        return instr.translate(tovb_table)
 
 
 class MyTestFrame(wx.Frame):

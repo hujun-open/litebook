@@ -19,7 +19,8 @@ data_files=[('templates', glob.glob('templates/*.*')),
             "litebook.exe.manifest",
             "litebook.ico","unrar.dll","bh.dat","py.dat","defaultconfig.ini",
             "Readme.txt",
-            "LTBNET_Readme.txt"
+            "LTBNET_Readme.txt",
+            "jf.dat",
             ],
 options = {'py2exe': {'bundle_files': 3,'compressed':False,'optimize':2,
             'includes': ['lxml.etree',
@@ -32,6 +33,7 @@ options = {'py2exe': {'bundle_files': 3,'compressed':False,'optimize':2,
 
                          ],
             'packages':['netifaces',],
+            "dll_excludes": ["MSVCP90.dll"],
             'excludes': [
                         "pywin", "pywin.debugger", "pywin.debugger.dbgcon",
                         "pywin.dialogs", "pywin.dialogs.list",
