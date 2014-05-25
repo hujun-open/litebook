@@ -1573,7 +1573,7 @@ class LiteView(wx.ScrolledWindow):
                 delta=0
                 #draw right page
 
-                x=self.maxWidth-self.vbookmargin
+                x=self.maxWidth-self.vbookmargin-ch_w-10
                 while line<=self.blockline:
                     y=self.vbookmargin
 
@@ -1820,6 +1820,8 @@ if __name__ == "__main__":
     else:
         frame_1.panel_1.SetShowMode(sys.argv[3])
     frame_1.panel_1.SetValue(alltxt)
+    frame_1.panel_1.SetShowMode('vbook')
+    frame_1.panel_1.SetSpace(vbookmargin=1)
 ##    frame_1.panel_1.Refresh()
 ##    frame_1.panel_1.Update()
 
