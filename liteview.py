@@ -88,7 +88,8 @@ class LiteView(wx.ScrolledWindow):
         self.centralmargin=20
         self.linespace=5
         self.vlinespace=15
-        self.Value=""
+        self.vbookpunc=True #是否在竖排书本模式下显示标点
+        self.Value=u""
         self.ValueCharCount=0
         self.under_line=True
         self.under_line_color="GREY"
@@ -1740,36 +1741,60 @@ class LiteView(wx.ScrolledWindow):
 
 
 
-    def toVBook(self,instr,mode=0):
+    def toVBook(self,instr):
         """
         将instr转换为适合竖排书本显示模式
         mode:
             1:将标点符号变成竖排标点
             2:去掉所有标点，只留竖排︒
         """
-        h2v={
-        u'.':u'\ufe12',
-        u'。':u'\ufe12',
-        u',':u'\ufe10',
-        u'，':u'\ufe10',
-        u'、':u'\ufe11',
-        u':':u'\ufe13',
-        u'：':u'\ufe13',
-        u';':u'\ufe14',
-        u'；':u'\ufe14',
-        u'!':u'\ufe15',
-        u'！':u'\ufe15',
-        u'?':u'\ufe16',
-        u'？':u'\ufe16',
-        u'“':u'\ufe17',
-        u'”':u'\ufe18',
-        u"‘":u'\ufe17',
-        u'’':u'\ufe18',
-        u'\u2026':u'\ufe19',
-        }
+        if self.vbookpunc==True:
+            h2v={
+            u'.':u'\ufe12',
+            u'。':u'\ufe12',
+            u',':u'\ufe10',
+            u'，':u'\ufe10',
+            u'、':u'\ufe11',
+            u':':u'\ufe13',
+            u'：':u'\ufe13',
+            u';':u'\ufe14',
+            u'；':u'\ufe14',
+            u'!':u'\ufe15',
+            u'！':u'\ufe15',
+            u'?':u'\ufe16',
+            u'？':u'\ufe16',
+            u'“':u'\ufe17',
+            u'”':u'\ufe18',
+            u"‘":u'\ufe17',
+            u'’':u'\ufe18',
+            u'\u2026':u'\ufe19',
+            }
+        else:
+            h2v={
+            u'.':u'\ufe12',
+            u'。':u'\ufe12',
+            u',':u'',
+            u'，':u'',
+            u'、':u'',
+            u':':u'',
+            u'：':u'',
+            u';':u'',
+            u'；':u'',
+            u'!':u'',
+            u'！':u'',
+            u'?':u'',
+            u'？':u'',
+            u'“':u'',
+            u'”':u'',
+            u"‘":u'',
+            u'’':u'',
+            u'\u2026':u'',
+            }
         tovb_table = dict((ord(char),h2v[char]) for char in h2v.keys())
         return instr.translate(tovb_table)
 
+    def SetVbookpunc(self,mode):
+        self.vbookpunc=mode
 
 class MyTestFrame(wx.Frame):
     def __init__(self, *args, **kwds):

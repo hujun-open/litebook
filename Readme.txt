@@ -1,5 +1,5 @@
-﻿LiteBook ver3.1
-(c)2013 Hu Jun	
+﻿LiteBook ver3.2
+(c)2014 Hu Jun	
 
 1.概述
 LiteBook是一个开源看书软件，具备如下主要功能：

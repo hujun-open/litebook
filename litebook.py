@@ -970,6 +970,7 @@ def readConfigFile():
         GlobalConfig['pagemargin']=50
         GlobalConfig['bookmargin']=50
         GlobalConfig['vbookmargin']=50
+        GlobalConfig['vbookpunc']=True
         GlobalConfig['centralmargin']=20
         GlobalConfig['linespace']=5
         GlobalConfig['vlinespace']=15
@@ -1177,6 +1178,12 @@ def readConfigFile():
         GlobalConfig['ShowAllFileInSidebar']=True
 
     try:
+        GlobalConfig['vbookpunc']=config.getboolean('settings','vbookpunc')
+    except:
+        GlobalConfig['vbookpunc']=True
+
+
+    try:
         t_flist=(config.items('LastOpenedFiles'))
         di={}
         for f in t_flist:
@@ -1364,6 +1371,7 @@ def writeConfigFile(lastpos):
     # save settings
     config = MyConfig()
     config.add_section('settings')
+    config.set('settings','vbookpunc',unicode(GlobalConfig['vbookpunc']))
     config.set('settings','LastDir',GlobalConfig['LastDir'])
     config.set('settings','LoadLastFile',unicode(GlobalConfig['LoadLastFile']))
     config.set('settings','AutoScrollInterval',unicode(GlobalConfig['AutoScrollInterval']))
@@ -2472,6 +2480,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         self.text_ctrl_1.SetFont(GlobalConfig['CurFont'])
         self.text_ctrl_1.SetUnderline(GlobalConfig['underline'],GlobalConfig['underlinestyle'],GlobalConfig['underlinecolor'])
         self.text_ctrl_1.SetSpace(GlobalConfig['pagemargin'],GlobalConfig['bookmargin'],GlobalConfig['vbookmargin'],GlobalConfig['centralmargin'],GlobalConfig['linespace'],GlobalConfig['vlinespace'])
+        self.text_ctrl_1.SetVbookpunc(GlobalConfig['vbookpunc'])
 
         self.text_ctrl_2 = wx.TextCtrl(self.window_1_pane_1, -1, "",style=wx.TE_PROCESS_TAB|wx.TE_PROCESS_ENTER)
 
@@ -3222,6 +3231,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         else:
             self.text_ctrl_1.SetBackgroundColour(GlobalConfig['CurBColor'])
             self.text_ctrl_1.bg_img=None
+        self.text_ctrl_1.SetVbookpunc(GlobalConfig['vbookpunc'])
         self.text_ctrl_1.SetFColor(GlobalConfig['CurFColor'])
         self.text_ctrl_1.SetFont(GlobalConfig['CurFont'])
         self.text_ctrl_1.SetUnderline(GlobalConfig['underline'],GlobalConfig['underlinestyle'],GlobalConfig['underlinecolor'])
@@ -3435,7 +3445,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         info = wx.AboutDialogInfo()
         info.Name = self.title_str
         info.Version = Version
-        info.Copyright = "(C) 2013 Hu Jun"
+        info.Copyright = "(C) 2014 Hu Jun"
         info.Description = u"轻巧看书，简单好用的看书软件！"
 
         info.WebSite = (u"http://code.google.com/p/litebook-project/", u"官方网站")
@@ -7679,6 +7689,7 @@ class NewOptionDialog(wx.Dialog):
         self.button_theme_export = wx.Button(self.notebook_1_pane_1, -1, u"导出")
         self.label_1 = wx.StaticText(self.notebook_1_pane_1, -1, u"选择显示模式：")
         self.combo_box_2 = wx.ComboBox(self.notebook_1_pane_1, -1, choices=[u"纸张模式", u"书本模式", u"竖排书本模式"], style=wx.CB_DROPDOWN|wx.CB_READONLY)
+        self.checkbox_vbookpunc = wx.CheckBox(self.notebook_1_pane_1, -1, label=u'竖排书本下无标点')
         self.label_3 = wx.StaticText(self.notebook_1_pane_1, -1, u"选择背景图片：")
         self.text_ctrl_2 = wx.TextCtrl(self.notebook_1_pane_1, -1, "",style=wx.TE_READONLY)
         self.button_3 = wx.Button(self.notebook_1_pane_1, -1, u"选择")
@@ -7854,6 +7865,7 @@ class NewOptionDialog(wx.Dialog):
             self.button_3.Disable()
             self.combo_box_3.Disable()
 
+        self.checkbox_vbookpunc.SetValue(not GlobalConfig['vbookpunc'])
         if GlobalConfig['underline']==False:
             self.combo_box_5.Select(0)
         else:
@@ -7999,9 +8011,10 @@ class NewOptionDialog(wx.Dialog):
         sizer_5.Add(self.button_theme_export, 0, 0, 0)
         sizer_5.Add(self.button_theme_import, 0, 0, 0)
         sizer_4.Add(sizer_5, 0, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL, 0)
-        sizer_6.Add(self.label_1, 0, wx.ALIGN_CENTER_VERTICAL, 0)
-        sizer_6.Add(self.combo_box_2, 0, 0, 0)
-        sizer_4.Add(sizer_6, 0, wx.EXPAND, 0)
+        sizer_6.Add(self.label_1, 0, wx.ALIGN_CENTRE|wx.ALL, 5)
+        sizer_6.Add(self.combo_box_2, 1, wx.ALIGN_CENTRE|wx.ALL, 5)
+        sizer_6.Add(self.checkbox_vbookpunc, 2, wx.ALIGN_LEFT|wx.ALL, 5)
+        sizer_4.Add(sizer_6, 0, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL, 0)
         sizer_10.Add(self.label_3, 0, wx.ALIGN_CENTER_VERTICAL, 0)
         sizer_10.Add(self.text_ctrl_2, 0, 0, 0)
         sizer_10.Add(self.button_3, 0, 0, 0)
@@ -8171,6 +8184,7 @@ class NewOptionDialog(wx.Dialog):
 
     def OnOK(self,event):
         global ThemeList,GlobalConfig,KeyConfigList,KeyMenuList
+        GlobalConfig['vbookpunc'] = not self.checkbox_vbookpunc.GetValue()
         GlobalConfig['CurFont']=self.text_ctrl_3.GetFont()
         GlobalConfig['CurFColor']=self.text_ctrl_3.GetFColor()
         GlobalConfig['CurBColor']=self.text_ctrl_3.GetBackgroundColour()
