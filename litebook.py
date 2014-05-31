@@ -7,6 +7,8 @@
 #
 #
 #
+import locale
+SYSENC=locale.getdefaultlocale()[1]
 import sys
 FullVersion=False
 if len(sys.argv)>1:
@@ -9779,18 +9781,18 @@ if FullVersion:
 
 if __name__ == "__main__":
     if MYOS == 'Windows':
-        cache_dir=os.environ['USERPROFILE'].decode('gbk')+u"\\litebook\\cache"
+        cache_dir=os.environ['USERPROFILE'].decode(SYSENC)+u"\\litebook\\cache"
     else:
-        cache_dir=unicode(os.environ['HOME'],'utf-8')+u"/litebook/cache"
+        cache_dir=unicode(os.environ['HOME'],SYSENC)+u"/litebook/cache"
     if not os.path.isdir(cache_dir):
         os.makedirs(cache_dir)
     try:
         if MYOS == 'Windows':
-            SqlCon = sqlite3.connect(os.environ['APPDATA'].decode('gbk')+u"\\litebook.bookdb")
+            SqlCon = sqlite3.connect(os.environ['APPDATA'].decode(SYSENC)+u"\\litebook.bookdb")
         else:
-            SqlCon = sqlite3.connect(unicode(os.environ['HOME'],'utf-8')+u"/.litebook.bookdb")
+            SqlCon = sqlite3.connect(unicode(os.environ['HOME'],SYSENC)+u"/.litebook.bookdb")
     except:
-        print unicode(os.environ['HOME'],'utf-8')+u"/litebook.bookdb is not a sqlite file!"
+        print unicode(os.environ['HOME'],SYSENC)+u"/litebook.bookdb is not a sqlite file!"
     SqlCur=SqlCon.cursor()
     found=True
     sqlstr="select name from sqlite_master where type='table' and name='book_history'"
@@ -9832,8 +9834,11 @@ if __name__ == "__main__":
         """
         SqlCon.execute(sqlstr)
 
-
-    app = wx.App(True)
+    if MYOS == 'Windows':
+        logfilename=os.environ['APPDATA'].decode(SYSENC)+u"\\litebook.log"
+    else:
+        logfilename=unicode(os.environ['HOME'],SYSENC)+u"/.litebook.log"
+    app = wx.App(True,logfilename)
     #app = wx.PySimpleApp(0)
     fname=None
     if MYOS != 'Windows':
@@ -9843,8 +9848,8 @@ if __name__ == "__main__":
                 inc=raw_input()
                 if inc=='Y':
                     try:
-                        os.remove(unicode(os.environ['HOME'],'utf-8')+u"/.litebook_key.ini")
-                        os.remove(unicode(os.environ['HOME'],'utf-8')+u"/.litebook.ini")
+                        os.remove(unicode(os.environ['HOME'],SYSENC)+u"/.litebook_key.ini")
+                        os.remove(unicode(os.environ['HOME'],SYSENC)+u"/.litebook.ini")
                     except:
                         pass
             elif sys.argv[1]!='-full':
@@ -9864,8 +9869,8 @@ if __name__ == "__main__":
                 dlg=wx.MessageDialog(None,u"此操作将把当前配置恢复为缺省配置，可以解决某些启动问题，但是会覆盖当前设置，是否继续？",u"恢复到LiteBook的缺省设置",wx.YES_NO|wx.NO_DEFAULT)
                 if dlg.ShowModal()==wx.ID_YES:
                     try:
-                        os.remove(os.environ['APPDATA'].decode('gbk')+u"\\litebook.ini")
-                        os.remove(os.environ['APPDATA'].decode('gbk')+u"\\litebook_key.ini")
+                        os.remove(os.environ['APPDATA'].decode(SYSENC)+u"\\litebook.ini")
+                        os.remove(os.environ['APPDATA'].decode(SYSENC)+u"\\litebook_key.ini")
                     except:
                         pass
             elif sys.argv[1]!='-full':
@@ -9889,9 +9894,9 @@ if __name__ == "__main__":
     readPlugin()
     if GlobalConfig['InstallDefaultConfig']:InstallDefaultConfig()
     #wx.InitAllImageHandlers()
-    t0=time.time()
+    if fname != None:
+        fname = fname.decode(SYSENC) #convert to unicode
     frame_1 = MyFrame(None,fname)
     app.SetTopWindow(frame_1)
-    #print "windows is created ",time.time()-t0
     frame_1.Show()
     app.MainLoop()

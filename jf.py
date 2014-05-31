@@ -2,8 +2,14 @@
 # -*- coding: utf-8 -*-
 #
 import codecs
+import os.path
+import sys
 
-jfdb=codecs.open('jf.dat','r','utf-8')
+rpath=os.path.abspath(sys.argv[0])
+rpath=os.path.dirname(rpath)
+rpath=os.path.join(rpath,'jf.dat')
+
+jfdb=codecs.open(rpath,'r','utf-8')
 j2f=f2j={}
 for line in jfdb:
     j,f=line.strip().split()

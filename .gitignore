@@ -6,3 +6,5 @@ output/
 *.exe
 !kadp/KADP.exe
 
+ChineseSimplified.isl
+plugin/www.piaotian.net.py
