@@ -696,11 +696,10 @@ def InstallDefaultConfig():
 def readKeyConfig():
     global KeyConfigList,KeyMenuList,MYOS
     config=MyConfig()
+    conffile=GlobalConfig['path_list']['key_conf']
+
     try:
-        if MYOS == 'Windows':
-            ffp=codecs.open(os.environ['APPDATA'].decode('gbk')+u"\\litebook_key.ini",encoding='utf-8',mode='r')
-        else:
-            ffp=codecs.open(unicode(os.environ['HOME'],'utf-8')+u"/.litebook_key.ini",encoding='utf-8',mode='r')
+        ffp=codecs.open(conffile,encoding='utf-8',mode='r')
         config.readfp(ffp)
     except:
         kconfig=[]
@@ -895,11 +894,10 @@ def writeKeyConfig():
         for key,val in cstr.items():
             config.set(kconfig[0],unicode(key),val)
 
+
+    conffile=GlobalConfig['path_list']['key_conf']
     try:
-        if MYOS == 'Windows':
-            ConfigFile=codecs.open(os.environ['APPDATA'].decode('gbk')+u'\\litebook_key.ini',encoding='utf-8',mode='w')
-        else:
-            ConfigFile=codecs.open(unicode(os.environ['HOME'],'utf-8')+u'/.litebook_key.ini',encoding='utf-8',mode='w')
+        ConfigFile=codecs.open(conffile,encoding='utf-8',mode='w')
         config.write(ConfigFile)
         ConfigFile.close()
     except:
@@ -913,11 +911,10 @@ def readConfigFile():
     """This function will read config from litebook.ini to a global dict var: GlobalConfig"""
     global GlobalConfig,OpenedFileList,BookMarkList,ThemeList,BookDB,MYOS
     config = MyConfig()
+    conffile=GlobalConfig['path_list']['conf']
+
     try:
-        if MYOS == 'Windows':
-            ffp=codecs.open(os.environ['APPDATA'].decode('gbk')+u"\\litebook.ini",encoding='utf-8',mode='r')
-        else:
-            ffp=codecs.open(unicode(os.environ['HOME'],'utf-8')+u"/.litebook.ini",encoding='utf-8',mode='r')
+        ffp=codecs.open(conffile,encoding='utf-8',mode='r')
         config.readfp(ffp)
     except:
 
@@ -1472,18 +1469,11 @@ def writeConfigFile(lastpos):
 
 
     #write into litebook.ini
-#    try:
-    if MYOS == 'Windows':
-        ConfigFile=codecs.open(os.environ['APPDATA'].decode('gbk')+u'\\litebook.ini',encoding='utf-8',mode='w')
-    else:
-        ConfigFile=codecs.open(unicode(os.environ['HOME'],'utf-8')+u'/.litebook.ini',encoding='utf-8',mode='w')
+
+    conffile=GlobalConfig['path_list']['conf']
+    ConfigFile=codecs.open(conffile,encoding='utf-8',mode='w')
     config.write(ConfigFile)
     ConfigFile.close()
-#    except:
-#        dlg = wx.MessageDialog(None, u'写入配置文件错误！',u"错误！",wx.OK|wx.ICON_ERROR)
-#        dlg.ShowModal()
-#        dlg.Destroy()
-#        return False
     return True
 
 
@@ -4612,6 +4602,7 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         ##            else:
         ##                os.kill(self.KADP_Process.pid, signal.CTRL_C_EVENT)
         writeKeyConfig()
+        writeRedConf()
         event.Skip()
 
 
@@ -7734,6 +7725,13 @@ class NewOptionDialog(wx.Dialog):
         self.label_webroot = wx.StaticText(self.notebook_1_pane_2, -1, u"共享根目录：")
         self.text_ctrl_webroot = wx.TextCtrl(self.notebook_1_pane_2, -1, "", style=wx.TE_READONLY)
         self.button_webroot = wx.Button(self.notebook_1_pane_2, -1, u"选择")
+
+        self.label_redconf = wx.StaticText(self.notebook_1_pane_2, -1, u"配置文件目录：")
+        self.text_ctrl_redconf = wx.TextCtrl(self.notebook_1_pane_2, -1, "", style=wx.TE_READONLY)
+        self.button_redconf = wx.Button(self.notebook_1_pane_2, -1, u"选择")
+        self.button_migrate = wx.Button(self.notebook_1_pane_2, -1, u"迁移配置")
+
+
         self.label_MDNS = wx.StaticText(self.notebook_1_pane_2, -1, u"绑定的网络接口：")
         self.combo_box_MDNS = wx.ComboBox(self.notebook_1_pane_2, -1, choices=[], style=wx.CB_DROPDOWN | wx.CB_READONLY)
 
@@ -7797,6 +7795,8 @@ class NewOptionDialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON,self.OnExportKey,self.button_key_export)
         self.Bind(wx.EVT_BUTTON,self.OnExportTheme,self.button_theme_export)
         self.Bind(wx.EVT_BUTTON,self.OnImportTheme,self.button_theme_import)
+        self.Bind(wx.EVT_BUTTON,self.OnSelRedConf,self.button_redconf)
+        self.Bind(wx.EVT_BUTTON,self.migrateConf,self.button_migrate)
 
 
         self.Bind(wx.EVT_SPINCTRL,self.OnUpdateSpace,self.spin_ctrl_1)
@@ -7828,6 +7828,7 @@ class NewOptionDialog(wx.Dialog):
         self.text_ctrl_4.SetMinSize((200, -1))
         self.spin_ctrl_11.SetMinSize((100,-1))
         self.text_ctrl_webroot.SetMinSize((200, -1))
+        self.text_ctrl_redconf.SetMinSize((200,-1))
         self.label_MDNS.SetToolTipString(u"选择WEB服务器及mDNS所绑定的网络接口，缺省情况下系统会自动选择WLAN接口")
 
         #set preview area to current setting
@@ -7887,6 +7888,7 @@ class NewOptionDialog(wx.Dialog):
         #set initial value for control tab
         self.checkbox_1.SetValue(GlobalConfig['LoadLastFile'])
         self.checkbox_3.SetValue(GlobalConfig['EnableESC'])
+        self.text_ctrl_redconf.SetValue(GlobalConfig['redConfDir'])
         if MYOS != 'Windows':
             self.checkbox_3.Disable()
         self.checkbox_4.SetValue(GlobalConfig['EnableSidebarPreview'])
@@ -7979,6 +7981,7 @@ class NewOptionDialog(wx.Dialog):
         sizer_1 = wx.BoxSizer(wx.VERTICAL)
         sizer_weball = wx.StaticBoxSizer(self.sizer_weball_staticbox, wx.VERTICAL)
         sizer_web3 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_redconf = wx.BoxSizer(wx.HORIZONTAL)
         sizer_web2 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_MDNS = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -8058,6 +8061,12 @@ class NewOptionDialog(wx.Dialog):
         self.notebook_1_pane_1.SetSizer(sizer_4)
         sizer_2.Add(self.checkbox_1, 0, 0, 0)
         sizer_2.Add(self.checkbox_2, 0, 0, 0)
+        sizer_redconf.Add(self.label_redconf,0,0,0)
+        sizer_redconf.Add(self.text_ctrl_redconf,0,0,0)
+        sizer_redconf.Add(self.button_redconf,0,0,0)
+        sizer_redconf.Add(self.button_migrate,0,0,0)
+        sizer_2.Add(sizer_redconf,0,wx.EXPAND,0)
+
         sizer_1.Add(sizer_2, 0, wx.EXPAND, 0)
         sizer_23.Add(self.label_13, 0, wx.ALIGN_CENTER_VERTICAL, 0)
         sizer_23.Add(self.spin_ctrl_8, 0, 0, 0)
@@ -8166,6 +8175,56 @@ class NewOptionDialog(wx.Dialog):
         self.Layout()
         # end wxGlade
 
+    def migrateConf(self,evt):
+        """
+        Copy conf files from current path to the new path
+        """
+        global GlobalConfig
+        newconfdir=self.text_ctrl_redconf.GetValue()
+        err=False
+        if os.access(newconfdir,os.R_OK|os.W_OK):
+            try:
+                shutil.copy(GlobalConfig['path_list']['bookdb'],newconfdir)
+                shutil.copy(GlobalConfig['path_list']['conf'],newconfdir)
+                shutil.copy(GlobalConfig['path_list']['key_conf'],newconfdir)
+            except Exception as inst:
+                err=True
+                errmsg=str(inst)
+        else:
+            err=True
+            errmsg=u'新的目录:'+newconfdir+u' 无法读写'
+        if err:
+            dlg = wx.MessageDialog(None, errmsg,u"错误！",wx.OK|wx.ICON_ERROR)
+            dlg.ShowModal()
+            dlg.Destroy()
+        else:
+            dlg = wx.MessageDialog(None, u"配置文件已经成功拷贝到新目录 "+newconfdir,
+                u"成功！",wx.OK|wx.ICON_INFORMATION)
+            dlg.ShowModal()
+            dlg.Destroy()
+
+
+
+
+
+
+    def OnSelRedConf(self,evt):
+        global GlobalConfig
+        if GlobalConfig['redConfDir'] == None:
+            cur_path=''
+        else:
+            cur_path=GlobalConfig['redConfDir']
+        fdlg=wx.DirDialog(self,u"请选择配置文件目录：",cur_path)
+        if fdlg.ShowModal()==wx.ID_OK:
+            rdir=fdlg.GetPath()
+            if os.path.isdir(rdir):
+                self.text_ctrl_redconf.SetValue(rdir)
+            else:
+                dlg = wx.MessageDialog(None, rdir+u' 不是一个合法的目录',u"错误！",wx.OK|wx.ICON_ERROR)
+                dlg.ShowModal()
+                dlg.Destroy()
+        fdlg.Destroy()
+
     def OnChoseWebRoot(self,evt):
         global GlobalConfig
         fdlg=wx.DirDialog(self,u"请选择共享目录：",GlobalConfig['ShareRoot'])
@@ -8212,6 +8271,7 @@ class NewOptionDialog(wx.Dialog):
         GlobalConfig['vlinespace']=self.text_ctrl_3.vlinespace
 
         GlobalConfig['LoadLastFile']=self.checkbox_1.GetValue()
+        GlobalConfig['redConfDir']=self.text_ctrl_redconf.GetValue()
         GlobalConfig['EnableESC']=self.checkbox_3.GetValue()
         GlobalConfig['VerCheckOnStartup']=self.checkbox_2.GetValue()
         if GlobalConfig['ShowAllFileInSidebar']==self.checkbox_5.GetValue():
@@ -9779,20 +9839,90 @@ if FullVersion:
             return
 
 
-if __name__ == "__main__":
+def redirectConfPath():
+    """
+    return path of redirection config file as unicode
+    """
     if MYOS == 'Windows':
-        cache_dir=os.environ['USERPROFILE'].decode(SYSENC)+u"\\litebook\\cache"
+        return os.environ['APPDATA'].decode(SYSENC)+u"\\litebook_red.ini"
     else:
-        cache_dir=unicode(os.environ['HOME'],SYSENC)+u"/litebook/cache"
+        return unicode(os.environ['HOME'],SYSENC)+u"/.litebook_red.ini"
+
+def readRedConf():
+    """
+    This func is to return a conf path, include pathes all litebook conf
+    """
+    global GlobalConfig
+    GlobalConfig['redConfDir']=''
+    GlobalConfig['path_list']=None
+    config = MyConfig()
+    try:
+        ffp=codecs.open(redirectConfPath(),encoding='utf-8',mode='r')
+        config.readfp(ffp)
+    except Exception as inst:
+        return False
+    try:
+        confPath=config.get('settings','confdir').strip()
+        if not os.path.isdir(confPath):
+            return False
+        GlobalConfig['redConfDir']=confPath
+        path_list={}
+        path_list['cache_dir']=confPath+os.sep+u"cache"
+        path_list['bookdb']=confPath+os.sep+u"litebook.bookdb"
+        path_list['log']=confPath+os.sep+u"litebook.log"
+        path_list['conf']=confPath+os.sep+u"litebook.ini"
+        path_list['key_conf']=confPath+os.sep+u"litebook_key.ini"
+        GlobalConfig['path_list']=path_list
+        return path_list
+    except Exception as inst:
+        return False
+
+def writeRedConf():
+    """
+    Write new redirct conf dir into config
+    """
+    global GlobalConfig
+    if isinstance(GlobalConfig['redConfDir'],str) or isinstance(GlobalConfig['redConfDir'],unicode):
+        if  os.path.isdir(GlobalConfig['redConfDir']):
+            config = MyConfig()
+            config.add_section('settings')
+            config.set('settings','confdir',GlobalConfig['redConfDir'])
+            ConfigFile=codecs.open(redirectConfPath(),encoding='utf-8',mode='w')
+            config.write(ConfigFile)
+            ConfigFile.close()
+
+
+def loadDefaultConfPath():
+    """
+    load default conf path list into GloablConfig
+    """
+    global GlobalConfig
+    GlobalConfig['path_list']={}
+    if MYOS == 'Windows':
+        GlobalConfig['path_list']['cache_dir']=os.environ['USERPROFILE'].decode(SYSENC)+u"\\litebook\\cache"
+        GlobalConfig['path_list']['bookdb']=os.environ['APPDATA'].decode(SYSENC)+u"\\litebook.bookdb"
+        GlobalConfig['path_list']['conf']=os.environ['APPDATA'].decode(SYSENC)+u"\\litebook.ini"
+        GlobalConfig['path_list']['key_conf']=os.environ['APPDATA'].decode(SYSENC)+u"\\litebook_key.ini"
+    else:
+        GlobalConfig['path_list']['cache_dir']=unicode(os.environ['HOME'],SYSENC)+u"/litebook/cache"
+        GlobalConfig['path_list']['bookdb']=unicode(os.environ['HOME'],SYSENC)+u"/.litebook.bookdb"
+        GlobalConfig['path_list']['conf']=unicode(os.environ['HOME'],SYSENC)+u"/.litebook.ini"
+        GlobalConfig['path_list']['key_conf']=unicode(os.environ['HOME'],SYSENC)+u"/.litebook_key.ini"
+
+
+if __name__ == "__main__":
+    path_list=readRedConf()
+    if path_list == False:
+        loadDefaultConfPath()
+    cache_dir=GlobalConfig['path_list']['cache_dir']
     if not os.path.isdir(cache_dir):
         os.makedirs(cache_dir)
+    bookdb_dir=GlobalConfig['path_list']['bookdb']
     try:
-        if MYOS == 'Windows':
-            SqlCon = sqlite3.connect(os.environ['APPDATA'].decode(SYSENC)+u"\\litebook.bookdb")
-        else:
-            SqlCon = sqlite3.connect(unicode(os.environ['HOME'],SYSENC)+u"/.litebook.bookdb")
+        SqlCon = sqlite3.connect(bookdb_dir)
     except:
-        print unicode(os.environ['HOME'],SYSENC)+u"/litebook.bookdb is not a sqlite file!"
+        print bookdb_dir+u" is not a sqlite file!"
+
     SqlCur=SqlCon.cursor()
     found=True
     sqlstr="select name from sqlite_master where type='table' and name='book_history'"
@@ -9838,7 +9968,7 @@ if __name__ == "__main__":
         logfilename=os.environ['APPDATA'].decode(SYSENC)+u"\\litebook.log"
     else:
         logfilename=unicode(os.environ['HOME'],SYSENC)+u"/.litebook.log"
-    app = wx.App(True,logfilename)
+    app = wx.App(False,logfilename)
     #app = wx.PySimpleApp(0)
     fname=None
     if MYOS != 'Windows':
