@@ -27,6 +27,7 @@ options = {'py2exe': {'bundle_files': 3,'compressed':False,'optimize':2,
 
                          'lxml._elementpath',
                          'lxml.html',
+                         'bs4',
                          'gzip',
                          'download_manager',
                          'ctypes.*',

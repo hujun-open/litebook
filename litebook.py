@@ -35,6 +35,7 @@ import traceback
 import platform
 
 
+HOSTNAME = platform.node()
 MYOS = platform.system()
 osarch=platform.architecture()
 if osarch[1]=='ELF' and MYOS == 'Linux':
@@ -76,6 +77,13 @@ import urllib2
 import glob
 import math
 import htmlentitydefs
+#add the codepoints are not in the standard lib
+htmlentitydefs.name2codepoint['ldqo']=ord(u'“')
+htmlentitydefs.name2codepoint['rdqo']=ord(u'”')
+htmlentitydefs.name2codepoint['lsqo']=ord(u'‘')
+htmlentitydefs.name2codepoint['rsqo']=ord(u'’')
+htmlentitydefs.name2codepoint['dash']=ord(u'-')
+htmlentitydefs.name2codepoint['hllp']=8230
 import wx
 import wx.lib.mixins.listctrl
 import wx.lib.newevent
@@ -909,10 +917,10 @@ def writeKeyConfig():
 
 def readConfigFile():
     """This function will read config from litebook.ini to a global dict var: GlobalConfig"""
-    global GlobalConfig,OpenedFileList,BookMarkList,ThemeList,BookDB,MYOS
+    global GlobalConfig,OpenedFileList,BookMarkList,ThemeList,BookDB,MYOS,HOSTNAME
     config = MyConfig()
     conffile=GlobalConfig['path_list']['conf']
-
+    conffile=conffile
     try:
         ffp=codecs.open(conffile,encoding='utf-8',mode='r')
         config.readfp(ffp)
@@ -982,7 +990,17 @@ def readConfigFile():
         GlobalConfig['RunUPNPAtStartup']=False
         GlobalConfig['EnableLTBNET']=False
 
+        GlobalConfig['BookDirPrefix']=""
+
         return
+
+    try:
+        GlobalConfig['BookDirPrefix']=config.get('settings','BookDirPrefix').strip()
+        GlobalConfig['BookDirPrefix']=os.path.abspath(GlobalConfig['BookDirPrefix'])
+        if os.path.isdir(GlobalConfig['BookDirPrefix']) == False:
+            raise ValueError("")
+    except:
+        GlobalConfig['BookDirPrefix']=''
 
     try:
         GlobalConfig['mDNS_interface']=config.get('settings','mDNS_interface')
@@ -1366,7 +1384,7 @@ def readConfigFile():
 
 
 def writeConfigFile(lastpos):
-    global GlobalConfig,OpenedFileList,load_zip,current_file,current_zip_file,OnScreenFileList,BookMarkList,ThemeList,BookDB
+    global GlobalConfig,OpenedFileList,load_zip,current_file,current_zip_file,OnScreenFileList,BookMarkList,ThemeList,BookDB,HOSTNAME
     # save settings
     config = MyConfig()
     config.add_section('settings')
@@ -1406,22 +1424,28 @@ def writeConfigFile(lastpos):
     config.set('settings','ServerPort',unicode(GlobalConfig['ServerPort']))
     config.set('settings','mDNS_interface',unicode(GlobalConfig['mDNS_interface']))
     config.set('settings','toolsize',unicode(GlobalConfig['ToolSize']))
+    config.set('settings','BookDirPrefix',unicode(GlobalConfig['BookDirPrefix']))
     # save opened files
     config.add_section('LastOpenedFiles')
     i=0
     for f in OpenedFileList:
-        if f['type']=='normal':config.set('LastOpenedFiles',unicode(i),f['file'])
+        if f['type']=='normal':
+            fname=getBookPath(f['file'])
+            config.set('LastOpenedFiles',unicode(i),fname)
         else:
-            config.set('LastOpenedFiles',unicode(i),f['zfile']+u"|"+f['file'])
+            fname=getBookPath(f['zfile'])
+            config.set('LastOpenedFiles',unicode(i),fname+u"|"+f['file'])
         i+=1
     # save last open files and postion
     config.add_section('LastPosition')
     config.set('LastPosition','pos',unicode(lastpos))
     if OnScreenFileList.__len__()==1: #if there are multiple files opening, then last postition can not be remembered
         if not load_zip or current_zip_file=='':
-            config.set('LastPosition','lastfile',current_file)
+            fname=getBookPath(current_file)
+            config.set('LastPosition','lastfile',fname)
         else:
-            config.set('LastPosition','lastfile',current_zip_file+u"|"+current_file)
+            fname=getBookPath(current_zip_file)
+            config.set('LastPosition','lastfile',fname+u"|"+current_file)
     else:
         tstr=u''
         for onscrfile in OnScreenFileList:
@@ -1478,23 +1502,48 @@ def writeConfigFile(lastpos):
 
 
 
+def getBookPath(fpath):
+    """
+    return masked filepath
+    """
+    if GlobalConfig['BookDirPrefix']=='':
+        return fpath
+    if os.path.commonprefix([GlobalConfig['BookDirPrefix'],fpath])==GlobalConfig['BookDirPrefix']:
+        plen=len(GlobalConfig['BookDirPrefix'])
+        fname=fpath[plen+1:]
+    else:
+        fname=fpath
+    return fname
+
+def joinBookPath(fname):
+    """
+    return joined(by prefix) full path of book
+    """
+    if GlobalConfig['BookDirPrefix']=='' or os.path.isabs(fname):
+        return fname
+    return os.path.join(GlobalConfig['BookDirPrefix'],fname)
 
 
 
 def UpdateOpenedFileList(filename,ftype,zfile=''):
+    #need to work on this function to support prefix
     global OpenedFileList,GlobalConfig,SqlCon
     fi={}
     fi['type']=ftype
     fi['file']=filename
     fi['zfile']=zfile
-    sqlstr="insert into book_history values ('"+unicode(filename)+"','"+ftype+"','"+unicode(zfile)+"',"+str(time.time())+");"
+    if fi['type']=='normal':
+        fi['file']=getBookPath(fi['file'])
+    else:
+        fi['zfile']=getBookPath(fi['zfile'])
+    sqlstr="insert into book_history values ('"+unicode(fi['file'])+"','"+ftype+"','"+unicode(fi['zfile'])+"',"+str(time.time())+");"
     try:
         SqlCon.execute(sqlstr)
         SqlCon.commit()
     except:
         return
     for x in OpenedFileList:
-        if x['file']==filename:
+        if x['file']==fi['file']:
             if x['type']=='normal':
                 OpenedFileList.remove(x)
                 OpenedFileList.insert(0,x)
@@ -1565,6 +1614,7 @@ def VersionCheck():
 ##                return (latest_ver,'http://'+download_url)
 
 def htmname2uni(htm):
+    """replace the HTML codepoint into unicode character"""
     if htm[1]=='#':
         try:
             uc=unichr(int(htm[2:-1]))
@@ -1572,9 +1622,9 @@ def htmname2uni(htm):
         except:
             return htm
     else:
+
         try:
             uc=unichr(htmlentitydefs.name2codepoint[htm[1:-1]])
-
             return uc
         except:
             return htm
@@ -2712,11 +2762,15 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
             if GlobalConfig['LoadLastFile']==True:
                 flist=[]
                 if GlobalConfig['LastFile'].find('*')==-1: # if there is only one last opened file
-                    flist.append(GlobalConfig['LastFile'])
+##                    flist.append(GlobalConfig['LastFile'])
                     if GlobalConfig['LastZipFile']=='':
+                        if GlobalConfig['BookDirPrefix'] != '':
+                            flist.append(joinBookPath(GlobalConfig['LastFile']))
                         if flist[0].strip()<>'':self.LoadFile(flist,pos=GlobalConfig['LastPos'],startup=True)
                     else:
-                        if flist[0].strip()<>'':self.LoadFile(flist,'zip',GlobalConfig['LastZipFile'],pos=GlobalConfig['LastPos'],startup=True)
+                        flist.append(GlobalConfig['LastFile'])
+                        zfilename=joinBookPath(GlobalConfig['LastZipFile'])
+                        if flist[0].strip()<>'':self.LoadFile(flist,'zip',zfilename,pos=GlobalConfig['LastPos'],startup=True)
                 else: # if there are multiple last opened files
                     for f in GlobalConfig['LastFile'].split('*'):
                         flist=[]
@@ -3426,10 +3480,10 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         if filename<>'':self.LoadBookmark(filename,pos)
 
     def Menu401(self, event): # wxGlade: MyFrame.<event_handler>
-        url="file://"+cur_file_dir()+'/helpdoc/litebook.html'
+        url="file://"+cur_file_dir()+'/helpdoc/litebookhelp.htm'
         webbrowser.open_new_tab(url)
     def Menu404(self, event): # wxGlade: MyFrame.<event_handler>
-        url="file://"+cur_file_dir()+'/helpdoc/99.html'
+        url="file://"+cur_file_dir()+'/helpdoc/litebookhelp.htm#_Toc400963955'
         webbrowser.open_new_tab(url)
     def Menu402(self, event): # wxGlade: MyFrame.<event_handler>
         global Version
@@ -4533,9 +4587,11 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
                 flist=[]
                 flist.append(f['file'])
                 if f['type']=='normal':
-                    self.LoadFile(flist)
+                    fname=joinBookPath(f['file'])
+                    self.LoadFile([fname,])
                 else:
-                    self.LoadFile(flist,'zip',f['zfile'])
+                    zfname=joinBookPath(f['zfile'])
+                    self.LoadFile(flist,'zip',zfname)
                 break
 
     def OnESC(self,event):
@@ -5264,6 +5320,8 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         dlg.Destroy()
         if subscr and event.bookstate != None:
             bkstate=event.bookstate
+            if os.path.dirname(savefilename) == GlobalConfig['defaultsavedir']:
+                savefilename=os.path.basename(savefilename)
             sqlstr="insert into subscr values('%s','%s','%s','%s',%s,'%s','%s')" % (
                       bkstate['bookname'],bkstate['index_url'],
                       bkstate['last_chapter_name'],bkstate['last_update'],
@@ -6920,9 +6978,11 @@ class FileHistoryDialog(wx.Dialog,wx.lib.mixins.listctrl.ColumnSorterMixin):
     def OnLoadFile(self, event):
         filepath=self.list_ctrl_1.GetItemText(self.list_ctrl_1.GetFirstSelected())
         if filepath.find("|")==-1:
-            self.Parent.LoadFile((filepath,))
+            fname=joinBookPath(filepath)
+            self.Parent.LoadFile((fname,))
         else:
             (zfilename,filename)=filepath.split('|',1)
+            zfilename=joinBookPath(zfilename)
             self.Parent.LoadFile((filename,),'zip',zfilename)
         self.Hide()
 
@@ -7073,8 +7133,9 @@ class web_search_result_dialog(wx.Dialog):
         if sitename<>u'搜索所有网站':
             self.rlist=None
             self.rlist=PluginList[sitename+'.py'].GetSearchResults(keyword,useproxy=GlobalConfig['useproxy'],proxyserver=GlobalConfig['proxyserver'],proxyport=GlobalConfig['proxyport'],proxyuser=GlobalConfig['proxyuser'],proxypass=GlobalConfig['proxypass'])
-            for x in self.rlist:
-                x['sitename']=sitename
+            if self.rlist != None:
+                for x in self.rlist:
+                    x['sitename']=sitename
         else:
             sr=[]
             flist=glob.glob(cur_file_dir()+"/plugin/*.py")
@@ -7345,6 +7406,8 @@ class WebSubscrDialog(wx.Dialog):
                 lc_date=row[3]
                 chapter_count=row[4]
                 save_path=row[5]
+                if os.path.dirname(save_path) == '':
+                    save_path=os.path.join(GlobalConfig['defaultsavedir'],save_path)
                 plugin_name=row[6]
                 self.sublist[index_url]={'bookname':bookname,'last_chapter':lc_name,
                                          'last_update':lc_date,'save_path':save_path,
@@ -7731,6 +7794,10 @@ class NewOptionDialog(wx.Dialog):
         self.button_redconf = wx.Button(self.notebook_1_pane_2, -1, u"选择")
         self.button_migrate = wx.Button(self.notebook_1_pane_2, -1, u"迁移配置")
 
+        self.label_bookdirprefix = wx.StaticText(self.notebook_1_pane_2, -1, u"存书目录：")
+        self.text_ctrl_bookdirprefix = wx.TextCtrl(self.notebook_1_pane_2, -1, "", style=wx.TE_READONLY)
+        self.button_bookdirprefix = wx.Button(self.notebook_1_pane_2, -1, u"选择")
+
 
         self.label_MDNS = wx.StaticText(self.notebook_1_pane_2, -1, u"绑定的网络接口：")
         self.combo_box_MDNS = wx.ComboBox(self.notebook_1_pane_2, -1, choices=[], style=wx.CB_DROPDOWN | wx.CB_READONLY)
@@ -7739,7 +7806,7 @@ class NewOptionDialog(wx.Dialog):
         self.combo_box_6 = wx.ComboBox(self.notebook_1_pane_3, -1, choices=[u"直接阅读", u"另存为文件", u"直接保存在缺省目录下"], style=wx.CB_DROPDOWN|wx.CB_DROPDOWN|wx.CB_READONLY)
         self.label_17 = wx.StaticText(self.notebook_1_pane_3, -1, u"保存的缺省目录：")
         self.label_ltbroot = wx.StaticText(self.notebook_1_pane_ltbnet, -1, u"LTBNET共享目录：")
-        self.text_ctrl_1 = wx.TextCtrl(self.notebook_1_pane_3, -1, "")
+        self.text_ctrl_1 = wx.TextCtrl(self.notebook_1_pane_3, -1, "",style=wx.TE_READONLY)
         self.text_ctrl_ltbroot = wx.TextCtrl(self.notebook_1_pane_ltbnet, -1, "", size=(200,-1))
         self.label_ltbport = wx.StaticText(self.notebook_1_pane_ltbnet, -1, u"LTBNET端口(重启litebook后生效)：")
         self.spin_ctrl_ltbport = wx.SpinCtrl(self.notebook_1_pane_ltbnet, -1, "", min=1, max=65536)
@@ -7797,6 +7864,7 @@ class NewOptionDialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON,self.OnImportTheme,self.button_theme_import)
         self.Bind(wx.EVT_BUTTON,self.OnSelRedConf,self.button_redconf)
         self.Bind(wx.EVT_BUTTON,self.migrateConf,self.button_migrate)
+        self.Bind(wx.EVT_BUTTON,self.OnSelBookDirPrefix,self.button_bookdirprefix)
 
 
         self.Bind(wx.EVT_SPINCTRL,self.OnUpdateSpace,self.spin_ctrl_1)
@@ -7829,6 +7897,7 @@ class NewOptionDialog(wx.Dialog):
         self.spin_ctrl_11.SetMinSize((100,-1))
         self.text_ctrl_webroot.SetMinSize((200, -1))
         self.text_ctrl_redconf.SetMinSize((200,-1))
+        self.text_ctrl_bookdirprefix.SetMinSize((200,-1))
         self.label_MDNS.SetToolTipString(u"选择WEB服务器及mDNS所绑定的网络接口，缺省情况下系统会自动选择WLAN接口")
 
         #set preview area to current setting
@@ -7889,6 +7958,7 @@ class NewOptionDialog(wx.Dialog):
         self.checkbox_1.SetValue(GlobalConfig['LoadLastFile'])
         self.checkbox_3.SetValue(GlobalConfig['EnableESC'])
         self.text_ctrl_redconf.SetValue(GlobalConfig['redConfDir'])
+        self.text_ctrl_bookdirprefix.SetValue(GlobalConfig['BookDirPrefix'])
         if MYOS != 'Windows':
             self.checkbox_3.Disable()
         self.checkbox_4.SetValue(GlobalConfig['EnableSidebarPreview'])
@@ -8067,6 +8137,12 @@ class NewOptionDialog(wx.Dialog):
         sizer_redconf.Add(self.button_migrate,0,0,0)
         sizer_2.Add(sizer_redconf,0,wx.EXPAND,0)
 
+        sizer_bookdirprefix = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_bookdirprefix.Add(self.label_bookdirprefix,0,0,0)
+        sizer_bookdirprefix.Add(self.text_ctrl_bookdirprefix,0,0,0)
+        sizer_bookdirprefix.Add(self.button_bookdirprefix,0,0,0)
+        sizer_2.Add(sizer_bookdirprefix,0,wx.EXPAND,0)
+
         sizer_1.Add(sizer_2, 0, wx.EXPAND, 0)
         sizer_23.Add(self.label_13, 0, wx.ALIGN_CENTER_VERTICAL, 0)
         sizer_23.Add(self.spin_ctrl_8, 0, 0, 0)
@@ -8206,6 +8282,22 @@ class NewOptionDialog(wx.Dialog):
 
 
 
+    def OnSelBookDirPrefix(self,evt):
+        global GlobalConfig
+        if GlobalConfig['BookDirPrefix'] == '':
+            cur_path=''
+        else:
+            cur_path=GlobalConfig['redConfDir']
+        fdlg=wx.DirDialog(self,u"请选择存书目录：",cur_path)
+        if fdlg.ShowModal()==wx.ID_OK:
+            rdir=fdlg.GetPath()
+            if os.path.isdir(rdir):
+                self.text_ctrl_bookdirprefix.SetValue(rdir)
+            else:
+                dlg = wx.MessageDialog(None, rdir+u' 不是一个合法的目录',u"错误！",wx.OK|wx.ICON_ERROR)
+                dlg.ShowModal()
+                dlg.Destroy()
+        fdlg.Destroy()
 
 
     def OnSelRedConf(self,evt):
@@ -8272,6 +8364,7 @@ class NewOptionDialog(wx.Dialog):
 
         GlobalConfig['LoadLastFile']=self.checkbox_1.GetValue()
         GlobalConfig['redConfDir']=self.text_ctrl_redconf.GetValue()
+        GlobalConfig['BookDirPrefix']=self.text_ctrl_bookdirprefix.GetValue()
         GlobalConfig['EnableESC']=self.checkbox_3.GetValue()
         GlobalConfig['VerCheckOnStartup']=self.checkbox_2.GetValue()
         if GlobalConfig['ShowAllFileInSidebar']==self.checkbox_5.GetValue():

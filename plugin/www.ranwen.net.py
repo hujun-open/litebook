@@ -175,7 +175,7 @@ def get_search_result(url,key,useproxy=False,proxyserver='',proxyport=0,proxyuse
     #spoof user-agent as IE8 on win7
     myrequest.add_header("User-Agent","Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)")
     try:
-        rr=urllib2.urlopen(myrequest)
+        rr=urllib2.urlopen(myrequest,timeout=10)
         return rr.read()
     except Exception as inst:
         return None
