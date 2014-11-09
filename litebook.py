@@ -347,7 +347,7 @@ BookMarkList=[]
 ThemeList=[]
 BookDB=[]
 Ticking=True
-Version='3.2 '+MYOS
+Version='3.21 '+MYOS
 I_Version=3.21 # this is used to check updated version
 lb_hash='3de03ac38cc1c2dc0547ee09f866ee7b'
 
