@@ -348,7 +348,7 @@ ThemeList=[]
 BookDB=[]
 Ticking=True
 Version='3.2 '+MYOS
-I_Version=3.20 # this is used to check updated version
+I_Version=3.21 # this is used to check updated version
 lb_hash='3de03ac38cc1c2dc0547ee09f866ee7b'
 
 def cur_file_dir():
@@ -2761,26 +2761,27 @@ class MyFrame(wx.Frame,wx.lib.mixins.listctrl.ColumnSorterMixin):
         else:
             if GlobalConfig['LoadLastFile']==True:
                 flist=[]
-                if GlobalConfig['LastFile'].find('*')==-1: # if there is only one last opened file
-##                    flist.append(GlobalConfig['LastFile'])
-                    if GlobalConfig['LastZipFile']=='':
-                        if GlobalConfig['BookDirPrefix'] != '':
-                            flist.append(joinBookPath(GlobalConfig['LastFile']))
-                        if flist[0].strip()<>'':self.LoadFile(flist,pos=GlobalConfig['LastPos'],startup=True)
-                    else:
-                        flist.append(GlobalConfig['LastFile'])
-                        zfilename=joinBookPath(GlobalConfig['LastZipFile'])
-                        if flist[0].strip()<>'':self.LoadFile(flist,'zip',zfilename,pos=GlobalConfig['LastPos'],startup=True)
-                else: # if there are multiple last opened files
-                    for f in GlobalConfig['LastFile'].split('*'):
-                        flist=[]
-                        if f.find('|')==-1:
-                            flist.append(f)
-                            self.LoadFile(flist,openmethod='append',startup=True)
+                if GlobalConfig['LastFile'] != "" and GlobalConfig['LastFile'] != None:
+                    if GlobalConfig['LastFile'].find('*')==-1: # if there is only one last opened file
+    ##                    flist.append(GlobalConfig['LastFile'])
+                        if GlobalConfig['LastZipFile']=='':
+                            if GlobalConfig['BookDirPrefix'] != '':
+                                flist.append(joinBookPath(GlobalConfig['LastFile']))
+                            if flist[0].strip()<>'':self.LoadFile(flist,pos=GlobalConfig['LastPos'],startup=True)
                         else:
-                            flist.append(f.split('|')[1])
-                            self.LoadFile(flist,'zip',f.split('|')[0].strip(),openmethod='append',startup=True)
-                    self.text_ctrl_1.ShowPosition(GlobalConfig['LastPos'])
+                            flist.append(GlobalConfig['LastFile'])
+                            zfilename=joinBookPath(GlobalConfig['LastZipFile'])
+                            if flist[0].strip()<>'':self.LoadFile(flist,'zip',zfilename,pos=GlobalConfig['LastPos'],startup=True)
+                    else: # if there are multiple last opened files
+                        for f in GlobalConfig['LastFile'].split('*'):
+                            flist=[]
+                            if f.find('|')==-1:
+                                flist.append(f)
+                                self.LoadFile(flist,openmethod='append',startup=True)
+                            else:
+                                flist.append(f.split('|')[1])
+                                self.LoadFile(flist,'zip',f.split('|')[0].strip(),openmethod='append',startup=True)
+                        self.text_ctrl_1.ShowPosition(GlobalConfig['LastPos'])
 
         self.text_ctrl_1.Bind(wx.EVT_MOUSEWHEEL,self.MyMouseMW)
 
