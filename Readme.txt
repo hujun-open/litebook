@@ -1,4 +1,8 @@
-﻿LiteBook ver3.2
+﻿## 
+litebook 早已停止开发维护，我用GO重新写了一个 golitebook (https://github.com/hujun-open/golitebook)
+##
+
+LiteBook ver3.2
 (c)2014 Hu Jun	
 
 1.概述
